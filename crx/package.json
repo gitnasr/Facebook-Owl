@@ -1,0 +1,51 @@
+{
+	"name": "tys",
+	"displayName": "Facebook Owl",
+	"version": "1.0.0",
+	"author": "gitnasr",
+	"description": "Facebook Owl: Track Your Facebook accounts and get notified when someone unfriend you.",
+	"type": "module",
+	"license": "MIT",
+	"engines": {
+		"node": ">=14.18.0"
+	},
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"fmt": "prettier --write '**/*.{tsx,ts,json,css,scss,md}'",
+		"prepare": "husky install"
+	},
+	"dependencies": {
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0"
+	},
+	"devDependencies": {
+		"@crxjs/vite-plugin": "^2.0.0-beta.19",
+		"@react-icons/all-files": "^4.1.0",
+		"@types/chrome": "^0.0.246",
+		"@types/crypto-js": "^4.2.2",
+		"@types/react": "^18.2.57",
+		"@types/react-dom": "^18.2.19",
+		"@vitejs/plugin-react": "^4.1.0",
+		"autoprefixer": "^10.4.17",
+		"cheerio": "^1.0.0-rc.12",
+		"cron": "^3.1.6",
+		"cron-time-generator": "^2.0.3",
+		"crypto-js": "^4.2.0",
+		"device-detector-js": "^3.0.3",
+		"jsonwebtoken-esm": "^1.0.5",
+		"moment": "^2.30.1",
+		"nanoid": "^3.3.7",
+		"postcss": "^8.4.35",
+		"prettier": "^3.0.3",
+		"react-content-loader": "^7.0.0",
+		"react-icons": "^5.0.1",
+		"rippleui": "^1.12.1",
+		"tailwindcss": "^3.4.1",
+		"typescript": "^5.2.2",
+		"vite": "^4.4.11",
+		"vite-plugin-dynamic-import": "^1.5.0",
+		"husky": "^8.0.0"
+	}
+}
