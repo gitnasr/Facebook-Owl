@@ -99,9 +99,10 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 		ownerId: data.owner.oId,
 		id: +uId,
 	}
-	await UpdateAccountInfo(AccountInfoPayload)
+	const existingAccount = await Storage.GetAccountInfo()
+	const ShouldRefresh = moment(state.nextRefresh).isSameOrBefore(new Date()) || skipTime || (+uId !== existingAccount.id)
+	await Storage.UpdateAccountInfo(AccountInfoPayload)
 
-	const ShouldRefresh = moment(state.nextRefresh).isSameOrBefore(new Date()) || skipTime
 
 	if (ShouldRefresh) {
 		const friendsResponse = await fetch(friendsUrl)
@@ -115,7 +116,7 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 		friends = friends.slice(1)
 		await Storage.UpdateAccountInfo(UpdatedInfo)
 		const State: State = {
-			change: friends.length - state.count,
+			change: (+uId !== existingAccount.id) ? 0 :(friends.length - state.count),
 			count: friends.length,
 			isPositive: friends.length > state.count,
 			lastRefresh: moment().toDate(),

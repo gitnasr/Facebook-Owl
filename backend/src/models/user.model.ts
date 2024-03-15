@@ -1,7 +1,8 @@
-import {AUTH} from '@/types';
+import { IUserDoc, IUserModel } from '@/types';
+
 import mongoose from 'mongoose';
 
-const UserSchema = new mongoose.Schema<AUTH.IUserDoc, AUTH.IUserModel>(
+const UserSchema = new mongoose.Schema<IUserDoc, IUserModel>(
 	{
 		browserId: {
 			type: String,
@@ -19,6 +20,6 @@ const UserSchema = new mongoose.Schema<AUTH.IUserDoc, AUTH.IUserModel>(
 	}
 );
 
-const User = mongoose.model<AUTH.IUserDoc, AUTH.IUserModel>('User', UserSchema);
+const User = mongoose.model<IUserDoc, IUserModel>('User', UserSchema);
 
 export default User;

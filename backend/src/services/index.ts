@@ -4,6 +4,4 @@ import * as FacebookService from './facebook.service';
 import * as OwnerService from './owner.service';
 import * as SyncService from './sync.service';
 
-import RedisService from './redis.service';
-
-export {AuthService, CloudinaryService, FacebookService, OwnerService, RedisService, SyncService};
+export {AuthService, CloudinaryService, FacebookService, OwnerService,  SyncService};

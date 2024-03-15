@@ -1,7 +1,8 @@
-import {IMAGE} from '@/types';
+import { IImageDoc, IImageModel } from '@/types';
+
 import mongoose from 'mongoose';
 
-const Schema = new mongoose.Schema<IMAGE.IImageDoc, IMAGE.IImageModel>(
+const Schema = new mongoose.Schema<IImageDoc, IImageModel>(
 	{
 		originalURL: String,
 		cloud: String,
@@ -17,6 +18,6 @@ const Schema = new mongoose.Schema<IMAGE.IImageDoc, IMAGE.IImageModel>(
 	}
 );
 
-const Image = mongoose.model<IMAGE.IImageDoc, IMAGE.IImageModel>('Image', Schema);
+const Image = mongoose.model<IImageDoc, IImageModel>('Image', Schema);
 
 export default Image;

@@ -1,17 +1,28 @@
-import JobHandlers from './handlers';
-import agenda from '.';
+import {SyncQ} from '.';
 
 const schedule = {
 	syncFriends: async (data: any, jName: string) => {
-		agenda.define(jName, JobHandlers.Sync);
-		await agenda.now(jName, data);
+		const job = await SyncQ.add(jName, data);
+		return job;
 	},
-	getActiveJob: async (jobName: string) => {
-		return await agenda.jobs({name: jobName, lockedAt: {$ne:null}});
-	},
-	automatedFixer: async () => {
-		agenda.define('fixer', JobHandlers.Fixer);
-		await agenda.every('1 hour', 'fixer');
+
+	getActiveJob: async (jobName: string): Promise<Boolean> => {
+		let isActive = false;
+		const activeJobIds = await SyncQ.getActive();
+		if (activeJobIds.length === 0) {
+			console.log('No active jobs');
+			return isActive;
+		}
+		for (const ajob of activeJobIds) {
+			const jobId = ajob.id;
+			const job = await SyncQ.getJob(jobId as string);
+			if (job?.name === jobName) {
+				console.log(`Job ${jobName} is active. Skipping...`)
+				isActive = true;
+				break;
+			}
+		}
+		return isActive;
 	}
 };
 

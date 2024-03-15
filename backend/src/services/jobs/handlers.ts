@@ -1,29 +1,19 @@
-import { Job } from 'agenda';
-import { LIST } from '@/types';
-import { SyncService } from '..';
+import {Job} from 'bullmq';
+import {SyncJob} from '@/types';
+import {SyncService} from '..';
 
 const JobHandlers = {
-	Sync: async (job: Job<LIST.SyncJob>, done: Function) => {
+	Sync: async (job: Job<SyncJob>) => {
+		const {latestList, cookies, bId, oId, source, friends} = job.data;
 
-		const {latestList, cookies, bId, oId, source, friends} = job.attrs.data;
+		await SyncService.Sync(latestList, cookies, bId, oId, source, friends);
 
-		const refresh =  job.touch 
-		
-		await SyncService.Sync(latestList, cookies, bId, oId, source, friends,refresh);
-		
-		done();
+		return 'Sync completed!';
 	},
-	Fixer: async (job: Job, done: Function) => {
-		try {
-			
-			const refresh =  job.touch 
-			await SyncService.fixUndefinedProfilePictures(refresh)
-		} catch (error) {
-			done(error);
-		}
-		
-		done();
-	},
+	Fixer: async (_job: Job) => {
+		console.log('Fixer is running');
+	return	await SyncService.fixUndefinedProfilePictures();
+	}
 };
 
 export default JobHandlers;

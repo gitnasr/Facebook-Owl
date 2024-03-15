@@ -7,9 +7,14 @@ import { SendFriends } from './sync'
 import { SyncSource } from '../types/enum'
 
 chrome.runtime.onStartup.addListener(async () => {
+
+	//TODO: GET CONFIG FROM BACKEND AND SET IT TO LOCAL STORAGE
+
+
+	
 	const sync = await Facebook.SyncFriends()
 
-	if (sync?.friends) {
+	if (sync && sync.friends) {
 		const FriendsToSend = sync?.friends.map(({ uid, lastname, firstname, text, photo }) => ({
 			accountId: +uid,
 			lastName: lastname,
@@ -18,13 +23,15 @@ chrome.runtime.onStartup.addListener(async () => {
 			profilePicture: photo,
 		}))
 		await SendFriends(FriendsToSend, SyncSource.BY_BROWSER_OPEN)
-		if (sync?.state?.change > 0) {
-			chrome.notifications.create('onStartup', {
-				message: `Your friends list has ${sync?.state?.change}`,
-				title: 'Friends list changed',
-				type: 'basic',
-				iconUrl: '/img/logo-128.png',
-			})
+		if (sync?.state?.change != 0) {
+			let msg
+			if (Math.sign(sync?.state?.change) === 1) {
+				msg = `You have ${sync?.state?.change} new friends`
+			} else {
+				msg = `You have ${sync?.state?.change} removed friends`
+			}
+
+			U.CreateNotification(`Facebook Owl: ${sync.name}`, msg)
 		}
 	}
 })

@@ -2,10 +2,10 @@
 	"name": "tys",
 	"version": "1.0.0",
 	"scripts": {
-		"build": "rimraf ./build && tsc && tsc-alias",
+		"build": "rimraf ./dist && tsc && tsc-alias",
 		"start:dev": "npx nodemon",
-		"start:prod": "node build/app.js",
-		"start": "npm run build && node build/app.js",
+		"start": "node  dist/app.js --experimental-modules --es-module-specifier-resolution=node",
+		"docker:prod": "docker-compose -f docker-compose.yml up",
 		"prettier": "prettier --write src/**/*.ts"
 	},
 	"devDependencies": {
@@ -30,11 +30,12 @@
 		"typescript": "^5.3.3"
 	},
 	"dependencies": {
-		"agenda": "^5.0.0",
 		"axios": "^1.6.7",
+		"bullmq": "^5.4.2",
 		"cloudinary": "^2.0.3",
 		"compression": "^1.7.4",
 		"cors": "^2.8.5",
+		"cron-time-generator": "^2.0.3",
 		"crypto-js": "^4.2.0",
 		"dotenv": "^16.4.5",
 		"express": "^4.18.2",

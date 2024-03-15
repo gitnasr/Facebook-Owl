@@ -8,6 +8,6 @@
 	"jsxBracketSameLine": false,
 	"arrowParens": "avoid",
 	"proseWrap": "never",
-    "printWidth": 1000,
+    "printWidth": 250,
     "plugins": ["prettier-plugin-organize-imports"]
 }

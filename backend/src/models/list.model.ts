@@ -1,8 +1,7 @@
+import { IListDoc, IListModel, SyncSource } from '@/types';
 import {Schema, model} from 'mongoose';
 
-import {LIST} from '@/types';
-
-const FriendList = new Schema<LIST.IListDoc, LIST.IListModel>(
+const FriendList = new Schema<IListDoc, IListModel>(
 	{
 		lId: String,
 		friends: Array,
@@ -11,7 +10,7 @@ const FriendList = new Schema<LIST.IListDoc, LIST.IListModel>(
 		bId: String,
 		source: {
 			type: String,
-			enum: LIST.SyncSource
+			enum: SyncSource
 		}
 	},
 	{
@@ -20,6 +19,6 @@ const FriendList = new Schema<LIST.IListDoc, LIST.IListModel>(
 	}
 );
 
-const List = model<LIST.IListDoc, LIST.IListModel>('List', FriendList);
+const List = model<IListDoc, IListModel>('List', FriendList);
 
 export default List;

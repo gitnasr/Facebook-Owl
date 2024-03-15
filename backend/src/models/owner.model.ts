@@ -1,8 +1,7 @@
+import { IOwnerDoc, IOwnerModel } from '@/types';
 import mongoose, {Types} from 'mongoose';
 
-import {OWNER} from '@/types';
-
-const OwnerSchema = new mongoose.Schema<OWNER.IOwnerDoc, OWNER.IOwnerModel>(
+const OwnerSchema = new mongoose.Schema<IOwnerDoc, IOwnerModel>(
 	{
 		accountName: String,
 		accountId: Number,
@@ -29,6 +28,6 @@ const OwnerSchema = new mongoose.Schema<OWNER.IOwnerDoc, OWNER.IOwnerModel>(
 	}
 );
 
-const Owner = mongoose.model<OWNER.IOwnerDoc, OWNER.IOwnerModel>('Owner', OwnerSchema);
+const Owner = mongoose.model<IOwnerDoc, IOwnerModel>('Owner', OwnerSchema);
 
 export default Owner;

@@ -1,14 +1,12 @@
+import { Authentication, Facebook, U } from '../contentScript'
 import { CONSTs, SyncSource } from '../types/enum'
 
 import { CronJob } from 'cron'
 import CronTime from 'cron-time-generator'
-import { Facebook } from '../contentScript'
-import { IFriendSync } from '../types/facebook.interfaces'
 import { SendFriends } from '../contentScript/sync'
-import { nanoid } from 'nanoid'
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	(async () => {
+	;(async () => {
 		if (request.type === 'sync') {
 			const sync = await Facebook.SyncFriends(request.skip)
 			sendResponse(sync)
@@ -34,17 +32,20 @@ CronJob.from({
 				profilePicture: photo,
 			}))
 			await SendFriends(FriendsToSend, SyncSource.BY_TIMER)
-			if (sync?.state?.change > 0) {
-				chrome.notifications.create(nanoid(4), {
-					message: `Your friends list has ${sync?.state?.change} change`,
-					title: 'Friends list changed',
-					type: 'basic',
-					iconUrl: '/img/logo-128.png',
-					isClickable: true,
+			if (sync?.state?.change != 0) {
+				let msg
+				if (Math.sign(sync?.state?.change) === 1) {
+					msg = `You have ${sync?.state?.change} new friends`
+				} else {
+					msg = `You have ${sync?.state?.change} removed friends`
+				}
 
-				})
+				U.CreateNotification(`Facebook Owl: ${sync.name}`, msg)
 			}
 		}
 	},
 	start: true,
+})
+chrome.notifications.onClicked.addListener(() => {
+	Authentication.DashboardOpen()
 })

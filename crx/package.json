@@ -47,5 +47,15 @@
 		"vite": "^4.4.11",
 		"vite-plugin-dynamic-import": "^1.5.0",
 		"husky": "^8.0.0"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
+	"lint-staged": {
+		"*.{js,jsx}": [
+			"npx prettier --config .prettierrc --write"
+		]
 	}
 }

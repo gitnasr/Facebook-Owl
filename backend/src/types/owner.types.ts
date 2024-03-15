@@ -23,9 +23,8 @@ export interface IFindOwner {
 export interface IOwnerPayload extends Partial<IOwner> {
 	expiresAt: string;
 }
-
-export type Doc = Promise<IOwnerDoc| null>
-export type Docs = Promise<IOwnerDoc[]>
+export type IOwnerDocP = Promise<IOwnerDoc | null>;
+export type IOwnerDocsP = Promise<IOwnerDoc[]>;
 export interface IOwnerDoc extends IOwner, Document {}
 export interface IOwnerModel extends Model<IOwnerDoc> {}
 export interface IUpdateOwner extends Partial<IOwner> {}

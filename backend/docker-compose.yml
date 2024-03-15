@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  app:
+    container_name: facebook-owl
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file: .env
+    expose:
+      - ${PORT}
+    ports:
+      - ${PORT}:${PORT}
+    environment: 
+      - MONGODB_URL=mongodb://mongo:27017/facebook-owl
+    depends_on:
+      - mongo  
+      - redis
+    networks:
+      - backend
+    volumes:
+      - .:/app
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+
+ 
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - "8081:8081"
+    networks:
+      - backend
+
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"  # Map Redis port
+    networks:
+      - backend
+
+
+networks:
+  backend:
+    driver: bridge    
+
+volumes:
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local

@@ -16,7 +16,9 @@ const DashboardOpen = async () => {
 		browserId: await getToken(),
 	})
 
-	window.open(`${CONSTs.FRONTEND}/history?token=${token}`, '_blank')
+	chrome.tabs.create({ url: `${CONSTs.FRONTEND}/history?token=${token}`,active: true ,})
+
+	// window.open(`${CONSTs.FRONTEND}/history?token=${token}`, '_blank')
 }
 
 const getDeviceInfo = async () => {

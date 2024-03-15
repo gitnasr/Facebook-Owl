@@ -1,8 +1,8 @@
 import {Document, Model, ObjectId} from 'mongoose';
 import {ICookie, RequestIP} from './u.types';
 
+import { IFriend } from './friend.types';
 import {Request} from 'express';
-import {JwtPayload} from 'jsonwebtoken';
 
 interface IUser {
 	browserId: string;
@@ -10,12 +10,6 @@ interface IUser {
 	browserType: string;
 	ownerId?: ObjectId;
 	country: string;
-}
-export interface IHistory extends JwtPayload {
-	ownerId: string;
-	browserId: string;
-	iat: number;
-	exp: number;
 }
 
 export interface ILogin {
@@ -36,9 +30,10 @@ export interface ICreateOwner {
 	country: string;
 }
 
-export interface IRequest extends Request {
+export interface IAuthRequest extends Request {
 	ipinfo?: RequestIP;
 	body: ILogin;
 }
 export interface IUserDoc extends IUser, Document {}
 export interface IUserModel extends Model<IUserDoc> {}
+export type IAccountPromised = Promise<{removed: IFriend[]; remaining: IFriend[]}>;

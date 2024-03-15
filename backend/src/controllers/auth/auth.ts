@@ -1,10 +1,10 @@
 import {AuthService, FacebookService, OwnerService} from '@/services';
 
-import {AUTH} from '@/types';
+import { IAuthRequest } from '@/types';
 import {Response} from 'express';
 import {catchAsync} from '@/utils';
 
-export const loginWithExtension = catchAsync(async (req: AUTH.IRequest, res: Response) => {
+export const loginWithExtension = catchAsync(async (req: IAuthRequest, res: Response) => {
 	const {browserId, accountId, browserType, count, accountName, browserVersion, cookies} = req.body;
 	let user = await AuthService.findByBrowserId(browserId);
 
@@ -23,26 +23,26 @@ export const loginWithExtension = catchAsync(async (req: AUTH.IRequest, res: Res
 			accountName,
 			count,
 			cookies,
-			country: req?.ipinfo?.country || 'Unknown',
-		
+			country: req?.ipinfo?.country || 'Unknown'
 		});
 	}
-	if (owner?.accountName !== accountName || owner.friendsCount !== count) {
+	if (!owner?.isNew) {
 		let pp = await FacebookService.getProfilePicture(accountId, cookies);
-
-		owner = await OwnerService.updateOwner(
-			{
-				accountId,
-				browserId
-			},
-			{
-				accountName,
-				friendsCount: count,
-				profilePic: pp?.url,
-				cookies,
-				pp_hash: pp?.hash
-			}
-		);
+		const isSame = pp?.hash === owner?.pp_hash;
+		if (!isSame) {
+			owner = await OwnerService.updateOwner(
+				{
+					accountId,
+					browserId
+				},
+				{
+					accountName,
+					profilePic: pp?.url,
+					cookies,
+					pp_hash: pp?.hash
+				}
+			);
+		}
 	}
 	res.status(200).json({
 		user,

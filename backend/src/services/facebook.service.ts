@@ -1,13 +1,12 @@
-import {FRIEND, IMAGE} from '@/types';
+import { ICookie, IImageDoc, IImagePayload, IProfilePicture } from '@/types';
 
 import {CloudinaryService} from '.';
-import {ICookie} from '@/types/u.types';
 import {Image} from '@/models';
 import axios from 'axios';
 import {config} from '@/config';
 import {nanoid} from 'nanoid';
 
-export const getProfilePicture = async (accountId: number, cookies: ICookie[], shouldCon: boolean = true): Promise<FRIEND.IProfilePicture | undefined> => {
+export const getProfilePicture = async (accountId: number, cookies: ICookie[], shouldCon: boolean = true): Promise<IProfilePicture | undefined> => {
 	try {
 		let url = `https://graph.facebook.com/${accountId}/picture?width=1080&access_token=${config.facebook.accessToken}`;
 		
@@ -51,22 +50,17 @@ export const getProfilePicture = async (accountId: number, cookies: ICookie[], s
 		}
 		return undefined;
 	} catch (error) {
-		return {
-			hash: '',
-			id: '',
-			url: `https://ui-avatars.com/api/?nameundefined&background=random&size=200&rounded=true&color=fff&bold=true`
-		
-		};
+		return undefined
 	}
 };
 
-const findByHashAndAccountId = async (hash: string, accountId: number): Promise<IMAGE.IImageDoc | null> => {
+const findByHashAndAccountId = async (hash: string, accountId: number): Promise<IImageDoc | null> => {
 	return Image.findOne({
 		hash,
 		accountId
 	});
 };
-const createHashed = async (payload: IMAGE.IImagePayload): Promise<IMAGE.IImageDoc> => {
+const createHashed = async (payload: IImagePayload): Promise<IImageDoc> => {
 	return Image.create({
 		...payload
 	});

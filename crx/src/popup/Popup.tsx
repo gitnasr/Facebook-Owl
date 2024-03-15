@@ -26,17 +26,19 @@ export const Popup = () => {
 							<div>No Facebook Account Detected</div>
 						) : (
 							<>
-								<div
-									className="flex flex-row items-center justify-between gap-4"
-									onClick={Authentication.DashboardOpen}
-								>
+								<div className="flex flex-row items-center justify-between gap-4 ">
 									<div className="flex flex-row items-center gap-4">
 										<div className="avatar avatar-ring-primary">
 											<img src={info?.profilePicture} alt="avatar" />
 										</div>
 
 										<div className="flex flex-col">
-											<h1>{info?.name}</h1>
+											<h1
+												onClick={Authentication.DashboardOpen}
+												className="hover:underline cursor-pointer"
+											>
+												{info?.name}
+											</h1>
 											<h3 className="text-xs text-gray-500">
 												Next Refresh{' '}
 												{moment(state?.nextRefresh).format('hh:mma')}

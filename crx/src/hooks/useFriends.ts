@@ -47,7 +47,6 @@ export const useFriends = () => {
 		[],
 	)
 	useEffect(() => {
-	
 		SyncFriends()
 	}, [])
 	return {

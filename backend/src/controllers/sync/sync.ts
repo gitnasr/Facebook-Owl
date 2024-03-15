@@ -1,20 +1,18 @@
-import { AUTH, LIST } from '@/types';
-import { Request, Response } from 'express';
+import { IHistory, IHistoryResponse, ISyncRequest, SyncJob, SyncJobName } from '@/types';
+import {Request, Response} from 'express';
 
-import { SyncService } from '@/services';
-import { catchAsync } from '@/utils';
+import { ApiError } from '@/middlewares/errors';
+import {SyncService} from '@/services';
+import {catchAsync} from '@/utils';
 import schedule from '@/services/jobs/emitter';
 
-export const Sync = catchAsync(async (req: Request<{}, {}, LIST.ISyncRequest>, res: Response) => {
-
-
+export const Sync = catchAsync(async (req: Request<{}, {}, ISyncRequest>, res: Response) => {
 	const {friends, oId, bId, cookies, source} = req.body;
-	
-	const jobName: string = `SYNC: ${oId} - ${bId}`
-	
-	
+
+	const jobName: SyncJobName = `SYNC: ${oId} - ${bId}`;
+
 	const activeJob = await schedule.getActiveJob(jobName);
-	if (activeJob.length > 0) {
+	if (activeJob) {
 		return res.status(200).send({
 			status: 'success',
 			message: 'There is an active job. Please wait for it to finish.'
@@ -23,17 +21,14 @@ export const Sync = catchAsync(async (req: Request<{}, {}, LIST.ISyncRequest>, r
 
 	const latestList = await SyncService.getLatestByOwnerIdAndBrowser(oId, bId);
 
-
-	
-
-	const Payload: LIST.SyncJob = {
+	const Payload: SyncJob = {
 		oId,
 		bId,
 		friends,
 		cookies,
 		source,
 		latestList
-	}
+	};
 	await schedule.syncFriends(Payload, jobName);
 
 	return res.status(200).send({
@@ -41,32 +36,43 @@ export const Sync = catchAsync(async (req: Request<{}, {}, LIST.ISyncRequest>, r
 		background: true,
 		jobName
 	});
-	
 });
 
-export const History = catchAsync(async (req: Request<{}, AUTH.IHistory>, res: Response) => {
-	const {ownerId} = req.body;
+export const History = catchAsync(async (req: Request<{}, {}, IHistory>, res: Response<IHistoryResponse>) => {
+	const {ownerId, browserId} = req.body;
+	const jobName: SyncJobName = `SYNC: ${ownerId} - ${browserId}`;
+	const activeJob = await schedule.getActiveJob(jobName);
+
+	if (activeJob) {
+		return res.status(200).send({
+			status: 'success',
+			isProcessing: true,
+			history: [],
+			owner: {}
+		});
+	}
 
 	const data = await SyncService.getHistory(ownerId);
 	if (!data) {
 		return res.status(200).send({
-			status: 'failed',
-			message: 'No history found'
+			status: 'success',
+			history: [],
+			owner: {},
+			isProcessing: false
 		});
 	}
 	return res.status(200).send({
 		status: 'success',
 		history: data.history,
-		owner: data.owner
+		owner: data.owner,
+		isProcessing: false
 	});
 });
 
 export const HistoryById = catchAsync(async (req: Request, res: Response) => {
-	// TODO: implement JWT
-	const {id} = req.params;
-	const {oId} = req.query as {oId: string};
-	const data = await SyncService.getListById(id, oId);
-	
+	const {id, ownerId, browserId} = req.body;
+	const data = await SyncService.getListById(id,browserId, ownerId );
+
 	if (!data) {
 		return res.status(200).send({
 			status: 'failed',
@@ -77,4 +83,17 @@ export const HistoryById = catchAsync(async (req: Request, res: Response) => {
 		status: 'success',
 		...data
 	});
+});
+
+
+
+export const AccountsByBrowserSession = catchAsync(async (req: Request, res: Response) => {
+	const {browserId} = req.body;
+	const {current} = req.query as {current: string};
+	if (!current) {
+		return new ApiError(400, 'Current is required');
+	}
+	const data = await SyncService.AccountsByBrowserSession(browserId,current);
+
+	return res.status(200).send(data || []);
 });
