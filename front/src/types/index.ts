@@ -76,7 +76,6 @@ export interface IHistoryDropdownProps {
 }
 export interface IAccountProps {
   owner: Partial<IOwner>;
-  update: (data: IHistoryResponse) => void;
 }
 export interface IStatsProps {
   changes: number;
@@ -99,5 +98,5 @@ export interface ISwitchViewProps {
   accounts: IAccountsResponse[];
   refer: React.RefObject<HTMLDialogElement>;
   browserId: string;
-  update: (data: IHistoryResponse) => void;
+  update: (p: string) => void;
 }

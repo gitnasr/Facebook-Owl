@@ -1,7 +1,7 @@
-import { IHistory, IHistoryResponse, ISyncRequest, SyncJob, SyncJobName } from '@/types';
+import {IHistory, IHistoryResponse, ISyncRequest, SyncJob, SyncJobName} from '@/types';
 import {Request, Response} from 'express';
 
-import { ApiError } from '@/middlewares/errors';
+import {ApiError} from '@/middlewares/errors';
 import {SyncService} from '@/services';
 import {catchAsync} from '@/utils';
 import schedule from '@/services/jobs/emitter';
@@ -47,7 +47,7 @@ export const History = catchAsync(async (req: Request<{}, {}, IHistory>, res: Re
 		return res.status(200).send({
 			status: 'success',
 			isProcessing: true,
-			history: [],
+			history: {changes: 0, list: [], options: [], previous: 0},
 			owner: {}
 		});
 	}
@@ -56,7 +56,7 @@ export const History = catchAsync(async (req: Request<{}, {}, IHistory>, res: Re
 	if (!data) {
 		return res.status(200).send({
 			status: 'success',
-			history: [],
+			history: {changes: 0, list: [], options: [], previous: 0},
 			owner: {},
 			isProcessing: false
 		});
@@ -71,7 +71,7 @@ export const History = catchAsync(async (req: Request<{}, {}, IHistory>, res: Re
 
 export const HistoryById = catchAsync(async (req: Request, res: Response) => {
 	const {id, ownerId, browserId} = req.body;
-	const data = await SyncService.getListById(id,browserId, ownerId );
+	const data = await SyncService.getListById(id, browserId, ownerId);
 
 	if (!data) {
 		return res.status(200).send({
@@ -85,15 +85,13 @@ export const HistoryById = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
-
-
 export const AccountsByBrowserSession = catchAsync(async (req: Request, res: Response) => {
 	const {browserId} = req.body;
 	const {current} = req.query as {current: string};
 	if (!current) {
 		return new ApiError(400, 'Current is required');
 	}
-	const data = await SyncService.AccountsByBrowserSession(browserId,current);
+	const data = await SyncService.AccountsByBrowserSession(browserId, current);
 
 	return res.status(200).send(data || []);
 });

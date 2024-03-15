@@ -30,7 +30,7 @@ export interface IHistoryResult {
 
 export interface IHistoryResponse {
 	status: 'success' | 'error';
-	history: History | [];
+	history: History;
 	owner: Partial<IOwnerDoc>;
 	isProcessing: boolean;
 }

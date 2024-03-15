@@ -1,14 +1,14 @@
-import api from '@api';
 import { IAccountProps, IAccountsResponse } from '@types';
-import moment from 'moment';
-import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
-import toast from 'react-hot-toast';
 
 import NextImage from '@/components/NextImage';
 import { SwitchView } from '@/components/Switch';
+import api from '@api';
+import moment from 'moment';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/router';
 
-export const AccountList = ({ owner, update }: IAccountProps) => {
+export const AccountList = ({ owner }: IAccountProps) => {
   const router = useRouter();
   const token = router.query.token as string;
   const [accounts, setAccounts] = useState<IAccountsResponse[]>([]);
@@ -39,7 +39,10 @@ export const AccountList = ({ owner, update }: IAccountProps) => {
           refer={modalRef}
           accounts={accounts}
           browserId={owner.browserId || ''}
-          update={update}
+          update={async (p) => {
+            await router.replace(p);
+            router.reload();
+          }}
         />
 
         <small className='mb-2 text-center text-xs font-medium uppercase leading-3 '>

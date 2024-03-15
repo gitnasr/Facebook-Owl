@@ -1,9 +1,8 @@
-import api from '@api';
 import { ISwitchViewProps } from '@types';
-import moment from 'moment';
 import { Modal } from 'react-daisyui';
-
 import NextImage from '@/components/NextImage';
+import api from '@api';
+import moment from 'moment';
 
 export const SwitchView = ({
   accounts,
@@ -12,18 +11,18 @@ export const SwitchView = ({
   update,
 }: ISwitchViewProps) => {
   const Switch = async (ownerId: string) => {
-    const data = await api.switchAccount(ownerId, browserId);
-    update(data);
+    const token = api.switchAccount(ownerId, browserId);
+    update(`/history?token=${token}`);
     refer.current?.close();
   };
   return (
     <Modal ref={refer} backdrop className='m-auto flex  flex-col'>
       <Modal.Header className='font-bold'>Your Accounts</Modal.Header>
-      <Modal.Body className=' my-2 flex flex-col justify-center'>
+      <Modal.Body className=' my-2 flex flex-col justify-center gap-5 '>
         {accounts.map((account) => (
           <div
             key={account._id}
-            className='flex h-full flex-row items-center justify-between gap-4'
+            className='flex h-full flex-row items-center justify-between gap-4 '
           >
             <div className='flex flex-row items-center gap-4'>
               <div className='h-12 w-12'>

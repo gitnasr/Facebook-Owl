@@ -1,10 +1,14 @@
 import { IAccountsResponse, IHistoryResponse } from '@types';
 import jwt from 'jsonwebtoken';
 
+import { isProd } from '@/constant/env';
+
 class API {
   private BASE_URL: string;
   constructor() {
-    this.BASE_URL = 'http://localhost:3000/api';
+    this.BASE_URL = isProd
+      ? 'https://facebook-owl.onrender.com/api'
+      : 'http://localhost:3000/api';
   }
   async getHistory(token: string): Promise<IHistoryResponse> {
     const response = await fetch(
@@ -43,19 +47,15 @@ class API {
     return res.json();
   };
 
-  switchAccount = async (
-    oId: string,
-    bId: string
-  ): Promise<IHistoryResponse> => {
+  switchAccount = (oId: string, bId: string): string => {
     const payload = {
       ownerId: oId,
       browserId: bId,
     };
-    const token = jwt.sign(payload, process.env.TOKEN_SECRET as string, {
+    const token = jwt.sign(payload, process.env.token as string, {
       expiresIn: '5m',
     });
-
-    return this.getHistory(token);
+    return token;
   };
 }
 
