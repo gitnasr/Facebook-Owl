@@ -2,9 +2,9 @@
 	"name": "tys",
 	"version": "1.0.0",
 	"scripts": {
-		"build": "rimraf ./dist && tsc && tsc-alias",
+		"build": "tsc && tsc-alias",
 		"start:dev": "npx nodemon",
-		"start": "node  dist/app.js --experimental-modules --es-module-specifier-resolution=node",
+		"start": "node dist/app.js",
 		"docker:prod": "docker-compose -f docker-compose.yml up",
 		"prettier": "prettier --write src/**/*.ts"
 	},
