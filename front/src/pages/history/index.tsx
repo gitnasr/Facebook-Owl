@@ -1,14 +1,15 @@
+import api from '@api';
+import { IHistoryProps } from '@types';
+import { useState } from 'react';
+
 import { AccountList } from '@/components/Account';
 import { HistoryDropdown } from '@/components/HistoryDropdown';
-import { IHistoryProps } from '@types';
 import Layout from '@/components/layout/Layout';
 import { Navbar } from '@/components/layout/Navbar';
 import { Processing } from '@/components/Processing';
 import Seo from '@/components/Seo';
 import Stats from '@/components/Stats';
 import Table from '@/components/Table';
-import api from '@api';
-import { useState } from 'react';
 
 const History = (props: IHistoryProps) => {
   const [userHistory, setUserHistory] = useState(props.data);
@@ -23,7 +24,7 @@ const History = (props: IHistoryProps) => {
         <section className='container flex flex-col justify-center'>
           {userHistory.isProcessing ? (
             <Processing />
-          ) : (
+          ) : userHistory.history.list ? (
             <div className='mx-auto w-fit'>
               <Stats
                 changes={userHistory.history.changes}
@@ -40,6 +41,8 @@ const History = (props: IHistoryProps) => {
               />
               <AccountList owner={userHistory.owner} />
             </div>
+          ) : (
+            <div>No Data</div>
           )}
           <small className='mt-4 text-center text-amber-600'>
             Warning! This Link is Classified Don't Share it with your friends,

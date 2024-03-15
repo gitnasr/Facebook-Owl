@@ -3,7 +3,7 @@ import {IList, IOwnerDoc} from "."
 import { JwtPayload } from 'jsonwebtoken';
 
 interface History {
-	list: IList | IList[];
+	list: IList | undefined;
 	previous: number;
 	options: HistoryDropdown[];
 	changes: number;

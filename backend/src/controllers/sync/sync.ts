@@ -47,7 +47,7 @@ export const History = catchAsync(async (req: Request<{}, {}, IHistory>, res: Re
 		return res.status(200).send({
 			status: 'success',
 			isProcessing: true,
-			history: {changes: 0, list: [], options: [], previous: 0},
+			history: {changes: 0, list: undefined, options: [], previous: 0},
 			owner: {}
 		});
 	}
@@ -56,7 +56,7 @@ export const History = catchAsync(async (req: Request<{}, {}, IHistory>, res: Re
 	if (!data) {
 		return res.status(200).send({
 			status: 'success',
-			history: {changes: 0, list: [], options: [], previous: 0},
+			history: {changes: 0, list: undefined, options: [], previous: 0},
 			owner: {},
 			isProcessing: false
 		});
