@@ -4,7 +4,7 @@ import {ICookie, RequestIP} from './u.types';
 import {IFindOwner, IOwnerDoc, IOwnerDocP, IOwnerDocsP, IOwnerModel, IOwnerPayload, IUpdateOwner} from './owner.types';
 import {IFriend, IFriendDoc, IFriendModel, IProfilePicture, IUpdateFriend} from './friend.types';
 import {IHistory, IHistoryResponse, IHistoryResult} from './history.types';
-import {IImageDoc, IImageModel, IImagePayload} from './image.types';
+import {IImageDoc, IImageModel, IImagePayload, ImageResponse} from './image.types';
 import { IList, IListById, IListDoc, IListFind, IListModel, ISyncRequest, ListChanges, ListDifference, SyncJob, SyncJobName, SyncSource } from './list.types';
 
 export {
@@ -21,7 +21,7 @@ export {
 	IHistory,
 	IHistoryResponse,
 	IHistoryResult,
-	IImageDoc,
+	IImageDoc,ImageResponse,
 	IImageModel,
 	IImagePayload,
 	IList,

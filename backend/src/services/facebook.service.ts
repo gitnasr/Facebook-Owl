@@ -30,7 +30,7 @@ export const getProfilePicture = async (accountId: number, cookies: ICookie[], s
 			};
 		}
 
-		const cloud_info = await CloudinaryService.uploadImage(pp);
+		const cloud_info = await CloudinaryService.uploadImage(pp, accountId.toString());
 		if (cloud_info) {
 			const imageId = nanoid(32);
 			createHashed({

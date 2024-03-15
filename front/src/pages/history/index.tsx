@@ -42,9 +42,16 @@ const History = (props: IHistoryProps) => {
               <AccountList owner={userHistory.owner} />
             </div>
           ) : (
-            <div>No Data</div>
+            <div className='mx-auto flex w-fit flex-col text-center'>
+              <h1 className='animate-pulse text-white'>No Data Found</h1>
+              <p className='max-w-lg'>
+                It's look like you're not synced to our servers, Your friend
+                list will automatically sync in a while or you can click on the
+                sync button in the extension.
+              </p>
+            </div>
           )}
-          <small className='mt-4 text-center text-amber-600'>
+          <small className='text-warning mt-4 text-center'>
             Warning! This Link is Classified Don't Share it with your friends,
             it will automatically expire.
           </small>

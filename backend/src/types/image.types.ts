@@ -9,6 +9,12 @@ interface IImage {
 	imageId: string;
 	accountId: number;
 }
+
+export interface ImageResponse {
+	url: string;
+	etag: string;
+	public_id: string;
+}
 export interface IImagePayload extends IImage {}
 export interface IImageDoc extends IImage, Document {}
 export interface IImageModel extends Model<IImageDoc> {}

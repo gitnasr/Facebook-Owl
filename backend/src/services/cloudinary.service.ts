@@ -1,17 +1,14 @@
+import { ImageResponse } from '@/types';
 import {v2 as cloudinary} from 'cloudinary';
 import {imageHash} from 'image-hash';
+import { nanoid } from 'nanoid';
 
-interface ImageResponse {
-	url: string;
-	etag: string;
-	public_id: string;
-}
-export const uploadImage = async (ImageURL: string): Promise<ImageResponse | null> => {
+export const uploadImage = async (ImageURL: string, fileName:string): Promise<ImageResponse | null> => {
 	try {
 		const result = await cloudinary.uploader.upload(ImageURL, {
-			unique_filename: true,
 			faces: true,
-			phash: true
+			phash: true,
+			public_id: `${fileName}_${nanoid(6)}`,resource_type: 'image'
 		});
 		return {
 			url: result.secure_url,
