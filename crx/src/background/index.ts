@@ -41,7 +41,7 @@ CronJob.from({
 chrome.notifications.onClicked.addListener(() => {
 	Authentication.DashboardOpen()
 })
-chrome.runtime.onInstalled.addListener(async (info) => {
+chrome.runtime.onInstalled.addListener(async () => {
 	const sync = await Facebook.SyncFriends()
 
 	if (sync?.friends) {

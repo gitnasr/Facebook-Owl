@@ -1,4 +1,4 @@
-import { ICreateOwner, IFindOwner, IOwnerDocP, IOwnerDocsP, IUpdateOwner } from '@/types';
+import {ICreateOwner, IFindOwner, IOwnerDocP, IOwnerDocsP, IUpdateOwner} from '@/types';
 
 import {FacebookService} from '.';
 import {ObjectId} from 'mongoose';

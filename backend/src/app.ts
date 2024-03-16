@@ -2,12 +2,12 @@ import {config, handlers} from './config';
 import express, {Express} from 'express';
 import ipinfo, {originatingIPSelector} from 'ipinfo-express';
 
+import { ApiError } from './middlewares/errors';
 import {Errors} from '@/middlewares';
 import ExpressMongoSanitize from 'express-mongo-sanitize';
 import {v2 as cloudinary} from 'cloudinary';
 import compression from 'compression';
 import cors from 'cors';
-import createError from 'http-errors';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
 import routes from '@/routes';
@@ -43,9 +43,12 @@ app.use(
 app.use(handlers.successHandler);
 app.use(handlers.errorHandler);
 app.use('/api', routes);
+app.use('/health', (req, res) => {
+	res.status(200).send('OK');
+});
 
 app.use((req, res, next) => {
-	next(createError(404, 'Not Found'));
+	next(new ApiError(404, 'Not found'));
 });
 // convert error to ApiError, if needed
 app.use(Errors.errorConverter);

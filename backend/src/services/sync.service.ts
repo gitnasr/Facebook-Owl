@@ -94,7 +94,7 @@ export const OptimizeHistory = (list: IListDoc): IListDoc => {
 			}
 		}
 	}
-	const Sorted = _.sortBy(newList.friends,'status').reverse();
+	const Sorted = _.sortBy(newList.friends, 'status').reverse();
 	newList.friends = Sorted;
 	return newList;
 };

@@ -13,6 +13,7 @@ interface IOwner {
 	oId: string;
 	cookies: ICookie[];
 	pp_hash: string;
+	country: string;
 }
 export interface IFindOwner {
 	oId?: string;

@@ -7,9 +7,9 @@ import {catchAsync} from '@/utils';
 export const loginWithExtension = catchAsync(async (req: IAuthRequest, res: Response) => {
 	const {browserId, accountId, browserType, count, accountName, browserVersion, cookies} = req.body;
 	let user = await AuthService.findByBrowserId(browserId);
-
+	const country = req?.ipinfo?.country || 'Unknown'
 	if (!user) {
-		user = await AuthService.createUser(browserId, browserVersion, browserType);
+		user = await AuthService.createUser(browserId, browserVersion, browserType,country);
 	}
 
 	let owner = await OwnerService.findAccountByOptions({
@@ -23,7 +23,7 @@ export const loginWithExtension = catchAsync(async (req: IAuthRequest, res: Resp
 			accountName,
 			count,
 			cookies,
-			country: req?.ipinfo?.country || 'Unknown'
+			country
 		});
 	}
 	if (!owner?.isNew) {

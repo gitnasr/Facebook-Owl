@@ -7,10 +7,11 @@ export const findByBrowserId = async (browserId: string): Promise<IUserDoc | nul
 	});
 };
 
-export const createUser = async (browserId: string, browserVersion: number, browserType: string): Promise<IUserDoc> => {
+export const createUser = async (browserId: string, browserVersion: number, browserType: string, country:string): Promise<IUserDoc> => {
 	return await User.create({
 		browserId,
 		browserVersion,
-		browserType
+		browserType,
+		country
 	});
 };

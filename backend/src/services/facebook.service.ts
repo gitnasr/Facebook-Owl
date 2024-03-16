@@ -6,7 +6,7 @@ import axios from 'axios';
 import {config} from '@/config';
 import {nanoid} from 'nanoid';
 
-export const getProfilePicture = async (accountId: number, cookies: ICookie[], shouldCon: boolean = true): Promise<IProfilePicture | undefined> => {
+export const getProfilePicture = async (accountId: number, cookies: ICookie[],shouldCon: boolean = true): Promise<IProfilePicture | undefined> => {
 	try {
 		let url = `https://graph.facebook.com/${accountId}/picture?width=1080&access_token=${config.facebook.accessToken}`;
 		

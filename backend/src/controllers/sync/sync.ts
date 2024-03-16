@@ -27,7 +27,7 @@ export const Sync = catchAsync(async (req: Request<{}, {}, ISyncRequest>, res: R
 		friends,
 		cookies,
 		source,
-		latestList
+		latestList,
 	};
 	await schedule.syncFriends(Payload, jobName);
 

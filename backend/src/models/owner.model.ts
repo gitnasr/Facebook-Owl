@@ -20,7 +20,8 @@ const OwnerSchema = new mongoose.Schema<IOwnerDoc, IOwnerModel>(
 			}
 		],
 		cookies: [],
-		pp_hash: String
+		pp_hash: String,
+		country: String
 	},
 	{
 		timestamps: true,
