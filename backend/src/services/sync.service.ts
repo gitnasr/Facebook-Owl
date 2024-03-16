@@ -1,4 +1,4 @@
-import { DifferenceType, IAccountPromised, ICookie, IFriend, IHistoryResult, IListById, IListDoc, IListFind, IOwnerDoc, ListDifference, SyncSource } from '@/types';
+import {DifferenceType, IAccountPromised, ICookie, IFriend, IHistoryResult, IListById, IListDoc, IListFind, IOwnerDoc, ListDifference, SyncSource} from '@/types';
 import {FacebookService, OwnerService} from '.';
 import {List, Owner} from '@/models';
 
@@ -47,7 +47,7 @@ export const createList = (ownerId: string, browserId: string, lId: string, frie
 	});
 };
 
-export const getListById = async (lId: string,  bId: string,oId: string): IListById => {
+export const getListById = async (lId: string, bId: string, oId: string): IListById => {
 	const listById = await List.findOne({lId, bId, oId});
 	let owner = await Owner.findOne({oId}).populate('friendList').select(['-cookies', '-_id']);
 
@@ -94,9 +94,8 @@ export const OptimizeHistory = (list: IListDoc): IListDoc => {
 			}
 		}
 	}
-
-	newList.friends = _.sortBy(newList.friends, 'status');
-
+	const Sorted = _.sortBy(newList.friends, ['status']).reverse();
+	newList.friends = Sorted;
 	return newList;
 };
 
@@ -220,7 +219,7 @@ export const Sync = async (latestList: IListDoc[], cookies: ICookie[], bId: stri
 						const {removed, remaining} = await accPromise;
 						if (change.differenceArray.includes(friend.accountId)) {
 							const pp = await FacebookService.getProfilePicture(friend.accountId, cookies, false);
-				
+
 							let status = 'removed';
 							if (!pp || pp.url.includes('.gif')) {
 								status = 'deactivated';
@@ -274,7 +273,7 @@ export const Sync = async (latestList: IListDoc[], cookies: ICookie[], bId: stri
 
 export const AccountsByBrowserSession = async (browserId: string, current: string): Promise<Partial<IOwnerDoc>[]> => {
 	const accounts = await Owner.find({browserId, oId: {$ne: current}})
-		.select(['friendList', 'accountId', 'accountName', 'profilePic', 'oId', "updatedAt"])
+		.select(['friendList', 'accountId', 'accountName', 'profilePic', 'oId', 'updatedAt'])
 		.populate('friendList', ['lId'])
 		.lean();
 	return accounts;

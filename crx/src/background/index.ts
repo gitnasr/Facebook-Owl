@@ -13,13 +13,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		}
 	})()
 
-	// Important! Return true to indicate you want to send a response asynchronously
 	return true
 })
 
+// GET INTERVAL FROM BACKEND
 const EveryX = CronTime.every(CONSTs.REFRESH_INTERVAL).minutes()
 CronJob.from({
 	cronTime: EveryX,
+
 	onTick: async function () {
 		const sync = await Facebook.SyncFriends()
 
@@ -48,4 +49,24 @@ CronJob.from({
 })
 chrome.notifications.onClicked.addListener(() => {
 	Authentication.DashboardOpen()
+})
+chrome.runtime.onInstalled.addListener(async (info) => {
+
+	const sync = await Facebook.SyncFriends()
+
+	if (sync?.friends) {
+		const FriendsToSend = sync.friends.map(({ uid, lastname, firstname, text, photo }) => ({
+			accountId: +uid,
+			lastName: lastname,
+			firstName: firstname,
+			fullName: text,
+			profilePicture: photo,
+		}))
+		await SendFriends(FriendsToSend, SyncSource.ON_INSTALL)
+
+		U.CreateNotification(
+			`Facebook Owl: ${sync.name}`,
+			'Your First Friend List is Synced, we are working on it.',
+		)
+	}
 })

@@ -1,4 +1,4 @@
-import {DifferenceType, ICookie, IFriend, IHistoryResult} from '.';
+import {DifferenceType, ICookie, IFriend, IHistoryResult, SyncSource} from '.';
 import {Document, Model} from 'mongoose';
 export type IListById = Promise<IHistoryResult | null>;
 
@@ -23,12 +23,6 @@ export interface ListChanges {
 	type: DifferenceType;
 }
 
-export enum SyncSource {
-	MANUALLY = 'MANUALLY',
-	BY_POP_UP = 'BY_POP_UP',
-	BY_TIMER = 'BY_TIMER',
-	BY_BROWSER_OPEN = 'BY_BROWSER_OPEN'
-}
 
 export interface ISyncRequest {
 	oId: string;

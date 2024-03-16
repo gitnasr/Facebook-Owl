@@ -1,9 +1,3 @@
-enum SyncSource {
-  MANUALLY = 'MANUALLY',
-  BY_POP_UP = 'BY_POP_UP',
-  BY_TIMER = 'BY_TIMER',
-  BY_BROWSER_OPEN = 'BY_BROWSER_OPEN',
-}
 enum DifferenceType {
   New,
   Removed,
@@ -32,7 +26,6 @@ interface IList {
   bId: string;
   createdAt: Date;
   updatedAt: Date;
-  source: SyncSource;
 }
 interface IOwner {
   accountName: string;
@@ -100,3 +93,9 @@ export interface ISwitchViewProps {
   browserId: string;
   update: (p: string) => void;
 }
+interface IFaqs {
+  title: string;
+  description: string;
+}
+
+export type Faq = IFaqs[];

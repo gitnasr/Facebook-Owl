@@ -1,7 +1,8 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
-// !STARTERCONF Change these default meta
+import { openGraph } from '@/lib/helper';
+
 const defaultMeta = {
   title: 'Facebook Owl: Chrome Extension to Track Facebook Friend List',
   siteName: 'Facebook Owl',
@@ -15,7 +16,7 @@ const defaultMeta = {
    * No need to be filled, will be populated with openGraph function
    * If you wish to use a normal image, just specify the path below
    */
-  image: 'https://facebook-owl.vercel.app/images/large-og.png',
+  image: 'https://facebook-owl.vercel.app/images/og.png',
 };
 
 type SeoProps = {
@@ -35,13 +36,12 @@ export default function Seo(props: SeoProps) {
 
   // Use siteName if there is templateTitle
   // but show full title if there is none
-  // !STARTERCONF Follow config for opengraph, by deploying one on https://github.com/theodorusclarence/og
   // ? Uncomment code below if you want to use default open graph
-  // meta['image'] = openGraph({
-  //   description: meta.description,
-  //   siteName: props.templateTitle ? meta.siteName : meta.title,
-  //   templateTitle: props.templateTitle,
-  // });
+  meta['image'] = openGraph({
+    description: meta.description,
+    siteName: props.templateTitle ? meta.siteName : meta.title,
+    templateTitle: props.templateTitle,
+  });
 
   return (
     <Head>
