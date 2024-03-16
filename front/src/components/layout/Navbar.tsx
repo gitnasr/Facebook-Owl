@@ -1,9 +1,12 @@
-import NextImage from '@/components/NextImage';
 import classNames from 'classnames';
+import Link from 'next/link';
+
+import NextImage from '@/components/NextImage';
 
 export const Navbar = ({ dark = false }) => {
   return (
-    <div
+    <Link
+      href='/'
       className={classNames('mx-auto flex justify-center py-4', {
         'bg-slate-900': dark,
       })}
@@ -15,6 +18,6 @@ export const Navbar = ({ dark = false }) => {
         height={64}
         className='mx-auto cursor-pointer rounded-full'
       />
-    </div>
+    </Link>
   );
 };

@@ -11,8 +11,7 @@ const JobHandlers = {
 		return 'Sync completed!';
 	},
 	Fixer: async (_job: Job) => {
-		console.log('Fixer is running');
-	return	await SyncService.fixUndefinedProfilePictures();
+		return await SyncService.fixUndefinedProfilePictures();
 	}
 };
 

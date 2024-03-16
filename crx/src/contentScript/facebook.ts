@@ -125,10 +125,17 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 				.toDate(),
 		}
 		await Storage.UpdateState(State)
-
+		const FriendsToSent = friends.map(({ uid, lastname, firstname, text, photo }) => ({
+			accountId: +uid,
+			lastName: lastname,
+			firstName: firstname,
+			fullName: text,
+			profilePicture: photo,
+			
+		}))
 		return {
 			friendsUrl: friendsUrl.toString(),
-			friends,
+			friends: FriendsToSent,
 			profilePicture: data.owner.profilePic,
 			ownerId: data.owner.oId,
 			id: +uId,

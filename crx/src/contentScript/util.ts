@@ -37,8 +37,8 @@ export const encryptPayload = async (payload: any, expiresInMin: number = 30) =>
 export const CreateNotification = (title: string, message: string) => {
 	const nId = nanoid(6)
 	return chrome.notifications.create(nId, {
-		message: message,
-		title: title,
+		message,
+		title,
 		type: 'basic',
 		iconUrl: '/img/logo-128.png',
 		isClickable: true,

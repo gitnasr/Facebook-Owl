@@ -27,3 +27,4 @@ export interface IFriendSync {
 	fullName: string
 	profilePicture: string
 }
+

@@ -1,13 +1,12 @@
+import { IFriend, IFriendSync } from './facebook.interfaces'
 import { IProfile, State } from './storage.interfaces'
-
-import { IFriend } from './facebook.interfaces'
 
 export interface IAccountInfo {
 	accountName: string
 	friendsURL: string
 }
 export interface ISync extends IProfile {
-	friends: IFriend[]
+	friends: IFriendSync[]
 	state: State
 }
 

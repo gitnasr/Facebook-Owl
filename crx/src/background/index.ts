@@ -16,7 +16,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	return true
 })
 
-// GET INTERVAL FROM BACKEND
 const EveryX = CronTime.every(CONSTs.REFRESH_INTERVAL).minutes()
 CronJob.from({
 	cronTime: EveryX,
@@ -25,23 +24,15 @@ CronJob.from({
 		const sync = await Facebook.SyncFriends()
 
 		if (sync?.friends) {
-			const FriendsToSend = sync.friends.map(({ uid, lastname, firstname, text, photo }) => ({
-				accountId: +uid,
-				lastName: lastname,
-				firstName: firstname,
-				fullName: text,
-				profilePicture: photo,
-			}))
-			await SendFriends(FriendsToSend, SyncSource.BY_TIMER)
-			if (sync?.state?.change != 0) {
-				let msg
-				if (Math.sign(sync?.state?.change) === 1) {
-					msg = `You have ${sync?.state?.change} new friends`
-				} else {
-					msg = `You have ${sync?.state?.change} removed friends`
-				}
+			await SendFriends(sync?.friends, SyncSource.BY_TIMER)
+			if (sync?.state?.change !== 0) {
+				const change = sync.state.change
+				const messageType = change > 0 ? 'new' : 'removed'
+				const friendCount = Math.abs(change)
+				const message = `You have ${friendCount} ${messageType} friend${friendCount !== 1 ? 's' : ''}`
+				const notificationTitle = `Facebook Owl: ${sync.name}`
 
-				U.CreateNotification(`Facebook Owl: ${sync.name}`, msg)
+				U.CreateNotification(notificationTitle, message)
 			}
 		}
 	},
@@ -51,18 +42,10 @@ chrome.notifications.onClicked.addListener(() => {
 	Authentication.DashboardOpen()
 })
 chrome.runtime.onInstalled.addListener(async (info) => {
-
 	const sync = await Facebook.SyncFriends()
 
 	if (sync?.friends) {
-		const FriendsToSend = sync.friends.map(({ uid, lastname, firstname, text, photo }) => ({
-			accountId: +uid,
-			lastName: lastname,
-			firstName: firstname,
-			fullName: text,
-			profilePicture: photo,
-		}))
-		await SendFriends(FriendsToSend, SyncSource.ON_INSTALL)
+		await SendFriends(sync?.friends, SyncSource.ON_INSTALL)
 
 		U.CreateNotification(
 			`Facebook Owl: ${sync.name}`,

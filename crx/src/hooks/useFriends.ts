@@ -30,17 +30,8 @@ export const useFriends = () => {
 					setIsLoading(false)
 					return
 				}
-				const FriendsToSend = response.friends.map(
-					({ uid, lastname, firstname, text, photo }) => ({
-						accountId: +uid,
-						lastName: lastname,
-						firstName: firstname,
-						fullName: text,
-						profilePicture: photo,
-					}),
-				)
 
-				await SendFriends(FriendsToSend, source)
+				await SendFriends(response.friends, source)
 				setIsLoading(false)
 			})
 		},

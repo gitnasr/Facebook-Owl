@@ -94,7 +94,7 @@ export const OptimizeHistory = (list: IListDoc): IListDoc => {
 			}
 		}
 	}
-	const Sorted = _.sortBy(newList.friends, ['status']).reverse();
+	const Sorted = _.sortBy(newList.friends,'status').reverse();
 	newList.friends = Sorted;
 	return newList;
 };
@@ -176,7 +176,6 @@ export const fixUndefinedProfilePictures = async () => {
 						isModified = true;
 					} else {
 						stats.failedToFix++;
-						console.log('Skipping profile picture for', friend.accountId, 'as it is not available');
 					}
 				}
 			}
