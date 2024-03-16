@@ -6,7 +6,6 @@ import { CONSTs } from '../types/enum'
 import { IFriend } from '../types/facebook.interfaces'
 import { ISync } from '../types/sync.interfaces'
 import { State } from '../types/storage.interfaces'
-import { UpdateAccountInfo } from './storage'
 import api from '../api'
 import { getDeviceInfo } from './authentication'
 import moment from 'moment'
@@ -64,13 +63,27 @@ const buildFriendsURL = async (accountId: number): Promise<URL> => {
 	return url
 }
 
-export async function SyncFriends(skipTime: boolean = true): Promise<ISync | undefined> {
+export async function SyncFriends(skipTime: boolean = true): Promise<ISync> {
 	const state = await Storage.GetState()
 	const Cookies = await U.getCookiesByWebSite('https://www.facebook.com/')
 	const uIdCookie = Cookies.find((cookie) => cookie.name === 'c_user')
 
 	if (!uIdCookie) {
-		return
+		return {
+			friends: [],
+			state: {
+				change: 0,
+				count: 0,
+				isPositive: false,
+				lastRefresh: new Date(),
+				nextRefresh: new Date(),
+			},
+			friendsUrl: '',
+			profilePicture: '',
+			ownerId: "0",
+			id: 0,
+			name: '',
+		}
 	}
 	const { token, device } = await getDeviceInfo()
 	const uId = uIdCookie.value
@@ -100,9 +113,11 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 		id: +uId,
 	}
 	const existingAccount = await Storage.GetAccountInfo()
-	const ShouldRefresh = moment(state.nextRefresh).isSameOrBefore(new Date()) || skipTime || (+uId !== existingAccount.id)
+	const ShouldRefresh =
+		moment(state.nextRefresh).isSameOrBefore(new Date()) ||
+		skipTime ||
+		+uId !== existingAccount.id
 	await Storage.UpdateAccountInfo(AccountInfoPayload)
-
 
 	if (ShouldRefresh) {
 		const friendsResponse = await fetch(friendsUrl)
@@ -116,7 +131,7 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 		friends = friends.slice(1)
 		await Storage.UpdateAccountInfo(UpdatedInfo)
 		const State: State = {
-			change: (+uId !== existingAccount.id) ? 0 :(friends.length - state.count),
+			change: +uId !== existingAccount.id ? 0 : friends.length - state.count,
 			count: friends.length,
 			isPositive: friends.length > state.count,
 			lastRefresh: moment().toDate(),
@@ -131,7 +146,6 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 			firstName: firstname,
 			fullName: text,
 			profilePicture: photo,
-			
 		}))
 		return {
 			friendsUrl: friendsUrl.toString(),

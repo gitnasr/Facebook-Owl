@@ -41,6 +41,6 @@ export default defineManifest({
 			matches: [],
 		},
 	],
-	permissions: ['cookies', 'storage', 'notifications'],
+	permissions: ['cookies', 'storage', 'notifications',"alarms"],
 	host_permissions: ['*://*.facebook.com/'],
 })
