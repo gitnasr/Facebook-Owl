@@ -4,7 +4,7 @@
 	"scripts": {
 		"build": "tsc && tsc-alias",
 		"start:dev": "npx nodemon",
-		"start": "pm2-runtime start ecosystem.config.js --env production",
+		"start": "pm2 start ecosystem.config.js --env production",
 		"docker:prod": "docker-compose -f docker-compose.yml up",
 		"prettier": "prettier --write src/**/*.ts"
 	},
