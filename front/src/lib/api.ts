@@ -7,7 +7,7 @@ class API {
   private BASE_URL: string;
   constructor() {
     this.BASE_URL = isProd
-      ? 'https://facebook-owl.onrender.com/api'
+      ? 'https://s-owl.gitnasr.com/api'
       : 'http://localhost:3000/api';
   }
   async getHistory(token: string): Promise<IHistoryResponse> {

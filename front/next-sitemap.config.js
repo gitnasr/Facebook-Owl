@@ -4,7 +4,7 @@
  */
 module.exports = {
   /** Without additional '/' on the end, e.g. https://theodorusclarence.com */
-  siteUrl: 'https://facebook-owl.vercel.app',
+  siteUrl: 'https://owl.gitnasr.com',
   generateRobotsTxt: true,
   robotsTxtOptions: {
     policies: [{ userAgent: '*', allow: '/' }],

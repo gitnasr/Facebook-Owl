@@ -10,7 +10,7 @@ export function openGraph({
   siteName,
   templateTitle,
   description,
-  logo = 'https://facebook-owl.vercel.app/images/logo.png',
+  logo = 'https://owl.gitnasr.com/images/logo.png',
 }: OpenGraphType): string {
   const ogLogo = encodeURIComponent(logo);
   const ogSiteName = encodeURIComponent(siteName.trim());

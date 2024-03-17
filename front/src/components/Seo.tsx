@@ -1,7 +1,6 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-
 import { openGraph } from '@/lib/helper';
+import { useRouter } from 'next/router';
 
 const defaultMeta = {
   title: 'Facebook Owl: Chrome Extension to Track Facebook Friend List',
@@ -9,14 +8,14 @@ const defaultMeta = {
   description:
     'A Chrome extension to track your Facebook friend list and see who unfriended you. Get notified when someone unfriends you.',
   /** Without additional '/' on the end, e.g. https://theodorusclarence.com */
-  url: 'https://facebook-owl.vercel.app',
+  url: 'https://owl.gitnasr.com',
   type: 'website',
   robots: 'follow, index',
   /**
    * No need to be filled, will be populated with openGraph function
    * If you wish to use a normal image, just specify the path below
    */
-  image: 'https://facebook-owl.vercel.app/images/og.png',
+  image: 'https://owl.gitnasr.com/images/og.png',
 };
 
 type SeoProps = {
