@@ -50,7 +50,8 @@ export const getProfilePicture = async (accountId: number, cookies: ICookie[],sh
 		}
 		return undefined;
 	} catch (error) {
-		return undefined
+		console.log("🚀 ~ getProfilePicture ~ error:", error)
+		throw error;
 	}
 };
 

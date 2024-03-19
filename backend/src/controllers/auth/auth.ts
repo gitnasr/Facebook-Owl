@@ -2,6 +2,7 @@ import {AuthService, FacebookService, OwnerService} from '@/services';
 
 import { IAuthRequest } from '@/types';
 import {Response} from 'express';
+import _ from 'underscore';
 import {catchAsync} from '@/utils';
 
 export const loginWithExtension = catchAsync(async (req: IAuthRequest, res: Response) => {
@@ -46,6 +47,6 @@ export const loginWithExtension = catchAsync(async (req: IAuthRequest, res: Resp
 	}
 	res.status(200).json({
 		user,
-		owner
+		owner: _.omit(owner, 'cookies')
 	});
 });

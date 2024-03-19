@@ -1,8 +1,9 @@
-import { Bitcoin } from 'lucide-react';
+import { Bitcoin, Github, Instagram } from 'lucide-react';
+import { RiPaypalFill, RiTelegramFill } from 'react-icons/ri';
+
 import Layout from '@/components/layout/Layout';
 import { Navbar } from '@/components/layout/Navbar';
 import NextImage from '@/components/NextImage';
-import { RiPaypalFill } from 'react-icons/ri';
 import Seo from '@/components/Seo';
 
 const Support = () => {
@@ -36,6 +37,30 @@ const Support = () => {
               <Bitcoin className=' h-8 w-8 text-amber-600' />
             </a>
 
+            <a
+              target='_blank'
+              rel='noopener noreferrer'
+              href='https://t.me/c0nasr'
+              className='mt-8 flex w-fit flex-row rounded-xl bg-white p-4 shadow-md ring-1'
+            >
+              <RiTelegramFill className=' h-8 w-8 text-blue-600' />
+            </a>
+            <a
+              target='_blank'
+              rel='noopener noreferrer'
+              href='https://instagram.com/c0nasr'
+              className='mt-8 flex w-fit flex-row rounded-xl bg-white p-4 shadow-md ring-1'
+            >
+              <Instagram className=' h-8 w-8 text-yellow-600' />
+            </a>
+            <a
+              target='_blank'
+              rel='noopener noreferrer'
+              href='https://github.com/gitnasr'
+              className='mt-8 flex w-fit flex-row rounded-xl bg-white p-4 shadow-md ring-1'
+            >
+              <Github className=' h-8 w-8 text-black' />
+            </a>
             <div className='mt-8 flex w-fit flex-row items-center gap-x-2 rounded-xl bg-white p-4 shadow-md ring-1'>
               <NextImage
                 src='/images/ipay.png'

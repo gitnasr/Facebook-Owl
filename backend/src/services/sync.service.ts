@@ -20,7 +20,7 @@ export const createBulkFriends = async (friends: IFriend[], cookies: ICookie[]):
 		let profilePicture = await FacebookService.getProfilePicture(friend.accountId, cookies);
 		if (typeof profilePicture === 'undefined') {
 			profilePicture = {
-				url: `https:ui-avatars.com/api/?name=${friend.fullName}&background=random&size=200&rounded=true&color=fff&bold=true`,
+				url: `https://ui-avatars.com/api/?name=${friend.fullName}&background=random&size=200&rounded=true&color=fff&bold=true`,
 				id: '',
 				hash: ''
 			};
@@ -148,7 +148,8 @@ export const fixUndefinedProfilePictures = async () => {
 	let stats = {
 		toBeFixed: 0,
 		fixed: 0,
-		failedToFix: 0
+		failedToFix: 0,
+		error: ''
 	};
 	try {
 		const isActive = await schedule.getActiveJob('FIXER');

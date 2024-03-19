@@ -2,7 +2,7 @@ import {config, handlers} from './config';
 import express, {Express} from 'express';
 import ipinfo, {originatingIPSelector} from 'ipinfo-express';
 
-import { ApiError } from './middlewares/errors';
+import { ApiError } from '@/middlewares/errors';
 import {Errors} from '@/middlewares';
 import ExpressMongoSanitize from 'express-mongo-sanitize';
 import {v2 as cloudinary} from 'cloudinary';
