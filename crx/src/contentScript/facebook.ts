@@ -63,7 +63,13 @@ const buildFriendsURL = async (accountId: number): Promise<URL> => {
 	return url
 }
 
-export async function SyncFriends(skipTime: boolean = true): Promise<ISync> {
+export async function SyncFriends(skipTime: boolean = true): Promise<ISync | undefined> {
+	const isSyncing = await Storage.GetStatus()
+	if (isSyncing) {
+		return
+	}
+	await Storage.UpdateStatus(true)
+
 	const state = await Storage.GetState()
 	const Cookies = await U.getCookiesByWebSite('https://www.facebook.com/')
 	const uIdCookie = Cookies.find((cookie) => cookie.name === 'c_user')
@@ -80,7 +86,7 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync> {
 			},
 			friendsUrl: '',
 			profilePicture: '',
-			ownerId: "0",
+			ownerId: '0',
 			id: 0,
 			name: '',
 		}

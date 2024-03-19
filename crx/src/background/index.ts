@@ -1,4 +1,4 @@
-import { Authentication, Facebook, Storage, U } from '../contentScript'
+import { Authentication, Facebook, U } from '../contentScript'
 import { CONSTs, SyncSource } from '../types/enum'
 
 import { SendFriends } from '../contentScript/sync'
@@ -19,9 +19,9 @@ chrome.notifications.onClicked.addListener(() => {
 })
 chrome.runtime.onInstalled.addListener(async () => {
 	const sync = await Facebook.SyncFriends()
-
+	if (!sync) return
 	if (sync.friends.length > 0) {
-		await SendFriends(sync?.friends, SyncSource.ON_INSTALL)
+		await SendFriends(sync.friends, SyncSource.ON_INSTALL)
 		U.CreateNotification(
 			`Facebook Owl: ${sync.name}`,
 			'Your First Friend List is Synced, we are working on it.',
@@ -40,6 +40,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
 	if (alarm.name === 'sync') {
 		const sync = await Facebook.SyncFriends()
+		if (!sync) return
 
 		if (sync.friends.length > 0) {
 			await SendFriends(sync.friends, SyncSource.BY_TIMER)

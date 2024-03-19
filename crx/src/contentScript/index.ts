@@ -8,7 +8,7 @@ import { SyncSource } from '../types/enum'
 
 chrome.runtime.onStartup.addListener(async () => {
 	const sync = await Facebook.SyncFriends()
-
+	if (!sync) return
 	if (sync.friends.length > 0) {
 		await SendFriends(sync.friends, SyncSource.BY_BROWSER_OPEN)
 		if (sync?.state?.change !== 0) {

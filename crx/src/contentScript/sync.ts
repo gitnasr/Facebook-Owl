@@ -1,6 +1,6 @@
 import { CONSTs, SyncSource } from '../types/enum'
+import { GetAccountInfo, UpdateStatus } from './storage'
 
-import { GetAccountInfo } from './storage'
 import { IFriendSync } from '../types/facebook.interfaces'
 import { U } from '.'
 import api from '../api'
@@ -23,6 +23,7 @@ const SendFriends = async (friends: IFriendSync[], Source: SyncSource) => {
 			.toISOString(),
 	}
 	await api.post('/sync', { payload: await U.encryptPayload(Payload, CONSTs.REFRESH_INTERVAL) })
+	await UpdateStatus(false)
 }
 
 export { SendFriends }
