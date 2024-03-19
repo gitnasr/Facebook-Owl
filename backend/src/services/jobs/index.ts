@@ -17,8 +17,6 @@ const worker = new Worker('Syncer', JobHandlers.Sync, {
 	}
 });
 
-
-
 const FixerQ = new Queue('Fixer', {connection: RedisService});
 new Worker('Fixer', JobHandlers.Fixer, {
 	connection: RedisService,
@@ -33,7 +31,7 @@ FixerQ.add(
 	{},
 	{
 		repeat: {
-			pattern: CronTime.every(1).hours()
+			pattern: CronTime.everyDayAt(0,0)
 		},
 		jobId: 'Fixer'
 	}
