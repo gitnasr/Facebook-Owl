@@ -15,7 +15,10 @@ export const getProfilePicture = async (accountId: number, cookies: ICookie[],sh
 				cookie: cookies.map(c => `${c.name}=${c.value}`).join(';')
 			}
 		});
-		if (response.status !== 200) return undefined;
+		if (response.status !== 200) {
+			console.error('Failed to get profile picture',response.data, response.status);
+			throw new Error('Failed to get profile picture');
+		}
 		const pp: string = response.request.res.responseUrl;
 		if (!shouldCon) return {hash: '', id: '', url: pp};
 		const hash = await CloudinaryService.getImageHash(pp);
