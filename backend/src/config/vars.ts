@@ -31,7 +31,7 @@ const config = {
 	env: envVars.NODE_ENV,
 	port: envVars.PORT,
 	mongoose: {
-		url: envVars.MONGODB_URL + "OWL"+ (envVars.NODE_ENV === 'development' ? ':test' : 'production'),
+		url: envVars.MONGODB_URL + ("OWL"+ envVars.NODE_ENV === 'development' ? ':test' : ''),
 		options: {
 			useCreateIndex: true,
 			useNewUrlParser: true,
