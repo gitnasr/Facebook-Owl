@@ -1,5 +1,5 @@
 import {DifferenceType, ICookie, IFriend, IHistoryResult, SyncSource} from '.';
-import {Document, Model} from 'mongoose';
+import {Document, Model, Schema} from 'mongoose';
 export type IListById = Promise<IHistoryResult | null>;
 
 export interface ListDifference {
@@ -39,6 +39,13 @@ export interface SyncJob {
 	bId: string;
 	source: SyncSource;
 	friends: IFriend[];
+}
+
+export interface PatrolJob {
+	friends: IFriend[];
+	cookies: ICookie[];
+	listId: Schema.Types.ObjectId;
+	latestFriends: IFriend[];	
 }
 export type IListFind = Promise<IListDoc[]>;
 export interface IListDoc extends IList, Document {}

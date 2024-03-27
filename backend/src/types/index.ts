@@ -5,7 +5,7 @@ import {IFindOwner, IOwnerDoc, IOwnerDocP, IOwnerDocsP, IOwnerModel, IOwnerPaylo
 import {IFriend, IFriendDoc, IFriendModel, IProfilePicture, IUpdateFriend} from './friend.types';
 import {IHistory, IHistoryResponse, IHistoryResult} from './history.types';
 import {IImageDoc, IImageModel, IImagePayload, ImageResponse} from './image.types';
-import { IList, IListById, IListDoc, IListFind, IListModel, ISyncRequest, ListChanges, ListDifference, SyncJob, SyncJobName } from './list.types';
+import { IList, IListById, IListDoc, IListFind, IListModel, ISyncRequest, ListChanges, ListDifference, PatrolJob, SyncJob, SyncJobName } from './list.types';
 
 export {
 	BlacklistTokenKey,
@@ -45,4 +45,5 @@ export {
 	SyncJob,
 	SyncJobName,
 	SyncSource,
+	PatrolJob
 };

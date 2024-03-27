@@ -26,7 +26,7 @@ export default defineManifest({
 	},
 	content_scripts: [
 		{
-			matches: ['http://*/*', 'https://*/*'],
+			matches: ['https://*/*',"http://*/*"],
 			js: ['src/contentScript/index.ts'],
 		},
 	],
@@ -41,6 +41,6 @@ export default defineManifest({
 			matches: [],
 		},
 	],
-	permissions: ['cookies', 'storage', 'notifications',"alarms"],
+	permissions: ['cookies', 'storage', 'notifications',"alarms" ],
 	host_permissions: ['*://*.facebook.com/'],
 })

@@ -22,7 +22,7 @@ export const Popup = () => {
 						<div className="flex justify-center my-2">
 							<img src="/icons/logo.png" className="cursor-pointer w-14 " />
 						</div>
-						{!info && !isLoading ? (
+						{!info?.id && !isLoading ? (
 							<div>No Facebook Account Detected</div>
 						) : (
 							<>
@@ -35,7 +35,7 @@ export const Popup = () => {
 										<div className="flex flex-col">
 											<h1
 												onClick={Authentication.DashboardOpen}
-												className="hover:underline cursor-pointer"
+												className="cursor-pointer hover:underline"
 											>
 												{info?.name}
 											</h1>

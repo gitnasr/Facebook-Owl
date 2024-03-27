@@ -31,9 +31,16 @@ FixerQ.add(
 	{},
 	{
 		repeat: {
-			pattern: CronTime.everyDayAt(0,0)
+			pattern: CronTime.everyDayAt(0, 0)
 		},
 		jobId: 'Fixer'
 	}
 );
-export {RedisService, SyncQ, worker};
+
+const PatrolQ = new Queue('Patrol', {connection: RedisService});
+
+new Worker('Patrol', JobHandlers.Partol, {
+	connection: RedisService,
+	concurrency: 1
+});
+export {PatrolQ, RedisService, SyncQ, worker};

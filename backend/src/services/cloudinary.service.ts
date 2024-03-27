@@ -31,3 +31,22 @@ export const getImageHash = async (ImageURL: string): Promise<string | undefined
 		return;
 	}
 };
+export const isSimilar = async (hash1: string, hash2: string): Promise<{similer: boolean, per: number}> => {
+	if (hash1.length !== hash2.length) {
+		throw new Error('pHashes must have the same length');
+	}
+
+	let hammingDist = 0;
+	for (let i = 0; i < hash1.length; i++) {
+		if (hash1[i] !== hash2[i]) {
+			hammingDist++;
+		}
+	}
+	const totalBits = hash1.length;
+	const similarity = (totalBits - hammingDist) / totalBits;
+
+	return {
+		similer: similarity > 0.7,
+		per: similarity
+	}
+};

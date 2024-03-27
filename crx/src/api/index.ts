@@ -3,7 +3,7 @@ import { CONSTs } from '../types/enum'
 class API {
 	private api: string
 	constructor() {
-		this.api = CONSTs.API as string
+		this.api = process.env.NODE_ENV === 'development' ? CONSTs.DEV_API as string : CONSTs.API as string
 	}
 	get(path: string) {
 		return fetch(`${this.api}/${path}`)

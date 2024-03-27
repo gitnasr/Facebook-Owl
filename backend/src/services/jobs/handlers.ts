@@ -1,5 +1,6 @@
+import {PatrolJob, SyncJob} from '@/types';
+
 import {Job} from 'bullmq';
-import {SyncJob} from '@/types';
 import {SyncService} from '..';
 
 const JobHandlers = {
@@ -12,6 +13,10 @@ const JobHandlers = {
 	},
 	Fixer: async (_job: Job) => {
 		return await SyncService.fixUndefinedProfilePictures();
+	},
+	Partol: async (job: Job<PatrolJob>) => {
+		const {cookies, friends, latestFriends, listId} = job.data;
+		return await SyncService.CheckForNewPictures(friends, latestFriends, cookies, listId);
 	}
 };
 

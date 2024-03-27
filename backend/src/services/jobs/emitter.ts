@@ -1,4 +1,6 @@
-import {SyncQ} from '.';
+import {PatrolQ, SyncQ} from '.';
+
+import {PatrolJob} from '@/types';
 
 const schedule = {
 	syncFriends: async (data: any, jName: string) => {
@@ -21,6 +23,10 @@ const schedule = {
 			}
 		}
 		return isActive;
+	},
+	startPatrol: async (data: PatrolJob, jName: string) => {
+		const job = await PatrolQ.add(jName, data);
+		return job;
 	}
 };
 

@@ -1,9 +1,11 @@
-import {DifferenceType, IAccountPromised, ICookie, IFriend, IHistoryResult, IListById, IListDoc, IListFind, IOwnerDoc, ListDifference, SyncSource} from '@/types';
-import {FacebookService, OwnerService} from '.';
+import {CloudinaryService, FacebookService, OwnerService} from '.';
+import {DifferenceType, ICookie, IFriend, IHistoryResult, IListById, IListDoc, IListFind, IOwnerDoc, ListChanges, ListDifference, SyncSource} from '@/types';
 import {List, Owner} from '@/models';
 
+import {ObjectId} from 'mongoose';
 import _ from 'underscore';
 import {arr} from '@/utils';
+import {logger} from '@/config';
 import moment from 'moment';
 import {nanoid} from 'nanoid';
 import schedule from './jobs/emitter';
@@ -192,6 +194,62 @@ export const fixUndefinedProfilePictures = async () => {
 	}
 };
 
+async function processFriendRemoval(existingFriends: IFriend[], change: ListChanges, cookies: ICookie[]) {
+	const removed = [];
+	const remaining = [];
+
+	for (const friend of existingFriends) {
+		if (change.differenceArray.includes(friend.accountId)) {
+			const pp = await FacebookService.getProfilePicture(friend.accountId, cookies, false);
+			let status = 'removed';
+			if (!pp || pp.url.includes('.gif')) {
+				status = 'deactivated';
+			}
+			const modifiedFriend = {...friend, status};
+			removed.push(modifiedFriend);
+		} else {
+			remaining.push(friend);
+		}
+	}
+
+	return {removed, remaining};
+}
+
+async function processFriendAddition(friends: IFriend[], change: ListChanges, cookies: ICookie[]) {
+	const added = friends.filter(friend => change.differenceArray.includes(friend.accountId));
+	const newFriends = await createBulkFriends(added, cookies);
+	return newFriends;
+}
+
+async function processFriendChanges(existingFriends: IFriend[], friends: IFriend[], changes: ListChanges[], cookies: ICookie[]) {
+	const PushedChanges: ListDifference[] = [];
+
+	for (const change of changes) {
+		let removed: IFriend[] = [];
+		let newFriends: IFriend[] = [];
+
+		if (change.type === DifferenceType.Removed) {
+			const {removed: removedFriends, remaining} = await processFriendRemoval(existingFriends, change, cookies);
+			existingFriends = remaining;
+			removed = removedFriends;
+		}
+
+		if (change.type === DifferenceType.New) {
+			newFriends = await processFriendAddition(friends, change, cookies);
+			existingFriends = existingFriends.concat(newFriends);
+		}
+
+		if (removed.length > 0) {
+			PushedChanges.push({type: DifferenceType.Removed, count: removed.length, changes: removed});
+		}
+		if (newFriends.length > 0) {
+			PushedChanges.push({type: DifferenceType.New, count: newFriends.length, changes: newFriends});
+		}
+	}
+
+	return {existingFriends, PushedChanges};
+}
+
 export const Sync = async (latestList: IListDoc[], cookies: ICookie[], bId: string, oId: string, source: SyncSource, friends: IFriend[]): Promise<IListDoc | undefined> => {
 	if (latestList.length === 0) {
 		const newFriends = await createBulkFriends(friends, cookies);
@@ -200,6 +258,7 @@ export const Sync = async (latestList: IListDoc[], cookies: ICookie[], bId: stri
 		await OwnerService.pushFriendListToOwner(oId, bId, newList._id, friends.length);
 		return newList;
 	}
+
 	const latestFriendsIds = latestList[0].friends.map(f => f.accountId);
 	const currentFriendsIds = friends.map(f => f.accountId);
 
@@ -211,63 +270,14 @@ export const Sync = async (latestList: IListDoc[], cookies: ICookie[], bId: stri
 			return f;
 		});
 
-		const PushedChanges: ListDifference[] = [];
-		for (const change of changes) {
-			if (change.type === DifferenceType.Removed) {
-				const {removed, remaining} = await existingFriends.reduce(
-					async (accPromise: IAccountPromised, friend: IFriend) => {
-						const {removed, remaining} = await accPromise;
-						if (change.differenceArray.includes(friend.accountId)) {
-							const pp = await FacebookService.getProfilePicture(friend.accountId, cookies, false);
+		const {existingFriends: updatedFriends, PushedChanges} = await processFriendChanges(existingFriends, friends, changes, cookies);
+		const newList = await createList(oId, bId, nanoid(), updatedFriends, source, PushedChanges);
 
-							let status = 'removed';
-							if (!pp || pp.url.includes('.gif')) {
-								status = 'deactivated';
-							}
-							const modifiedFriend: IFriend = {
-								...friend,
-								status
-							};
-							removed.push(modifiedFriend);
-						} else {
-							remaining.push(friend);
-						}
-						return {
-							removed,
-							remaining
-						};
-					},
-					Promise.resolve({
-						removed: [],
-						remaining: []
-					})
-				);
-
-				existingFriends = remaining;
-				PushedChanges.push({
-					type: DifferenceType.Removed,
-					count: removed.length,
-					changes: removed
-				});
-			}
-
-			if (change.type === DifferenceType.New) {
-				const added = friends.filter(f => change.differenceArray.includes(f.accountId));
-				const newFriends = await createBulkFriends(added, cookies);
-
-				existingFriends = existingFriends.concat(newFriends);
-				PushedChanges.push({
-					type: DifferenceType.New,
-					count: newFriends.length,
-					changes: newFriends
-				});
-			}
-		}
-
-		const newList = await createList(oId, bId, nanoid(), existingFriends, source, PushedChanges);
-
-		await OwnerService.pushFriendListToOwner(oId, bId, newList._id, existingFriends.length);
+		await OwnerService.pushFriendListToOwner(oId, bId, newList._id, updatedFriends.length);
 		return newList;
+	}
+	if (changes.length === 0) {
+		schedule.startPatrol({friends, cookies, listId: latestList[0]._id, latestFriends: latestList[0].friends}, nanoid());
 	}
 };
 
@@ -277,4 +287,41 @@ export const AccountsByBrowserSession = async (browserId: string, current: strin
 		.populate('friendList', ['lId'])
 		.lean();
 	return accounts;
+};
+export const CheckForNewPictures = async (friends: IFriend[], latestFriends: IFriend[], cookies: ICookie[], latestListId: ObjectId) => {
+	const NewList = latestFriends;
+	let changes =[]
+
+	for (const friend of friends) {
+		const hash = await CloudinaryService.getImageHash(friend.profilePicture);
+		if (hash) {
+			const saved = await FacebookService.findByAccountId(friend.accountId);
+			if (saved) {
+				const {per,similer} = await CloudinaryService.isSimilar(saved.hash, hash);
+				if (!similer) {
+
+					// TEMP: For Debugging purposes
+					changes.push({
+						accountId: friend.accountId,
+						newHash: hash,
+						oldHash: saved.hash,
+						newProfile: friend.profilePicture,
+						oldProfile: saved.cloud,
+						per: per
+
+					});
+					const getFullProfile = await FacebookService.getProfilePicture(friend.accountId, cookies);
+					if (getFullProfile) {
+						NewList.find(f => f.accountId === friend.accountId)!.profilePicture = getFullProfile.url;
+					}
+				} else {
+				}
+			}
+		}
+	}
+	if (changes.length > 0) {
+		await List.findByIdAndUpdate(latestListId, {friends: NewList}, {new: true});
+		return JSON.stringify(changes);
+	}
+	return `No changes found in the list with id ${latestListId}`;
 };

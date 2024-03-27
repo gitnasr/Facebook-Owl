@@ -35,7 +35,6 @@ export const UpdateAccountInfo = async (info: IProfile): Promise<Boolean> => {
 		await chrome.storage.sync.set({ ['info']: info })
 		return true
 	} catch (error) {
-		console.log('🚀 ~ UpdateAccountInfo ~ error:', error)
 		return false
 	}
 }
@@ -47,17 +46,4 @@ export const GetAccountInfo = async (): Promise<IProfile> => {
 
 export const ClearState = () => {
 	return chrome.storage.sync.clear()
-}
-export const UpdateStatus = async (status: boolean): Promise<Boolean> => {
-	try {
-		await chrome.storage.sync.set({ ['isSyncing']: status })
-		return true
-	} catch (error) {
-		return false
-	}
-}
-
-export const GetStatus = async (): Promise<boolean> => {
-	const { isSyncing } = await chrome.storage.sync.get(['isSyncing'])
-	return isSyncing
 }

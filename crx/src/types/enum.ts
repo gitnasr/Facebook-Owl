@@ -2,6 +2,7 @@ export enum CONSTs {
 	REFRESH_INTERVAL = 30,
 	REFRESH_INTERVAL_UNIT = 'minutes',
 	API = import.meta.env.VITE_BACKEND_URL,
+	DEV_API = import.meta.env.VITE_DEV_BACKEND_URL,
 	JSWOKEN = import.meta.env.VITE_JSWOKEN,
 	FRONTEND = import.meta.env.VITE_FRONTEND_URL,
 	CRYPTO = import.meta.env.VITE_CRYPTO,

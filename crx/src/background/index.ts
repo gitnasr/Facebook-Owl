@@ -1,4 +1,4 @@
-import { Authentication, Facebook, U } from '../contentScript'
+import { Authentication, Facebook, Storage, U } from '../contentScript'
 import { CONSTs, SyncSource } from '../types/enum'
 
 import { SendFriends } from '../contentScript/sync'

@@ -13,6 +13,7 @@ const nextConfig = {
   },
   env: {
     token: process.env.TOKEN_SECRET,
+    PORT: process.env.PORT || 3001,
   },
 
   // SVGR

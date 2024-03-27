@@ -50,12 +50,11 @@ export const getProfilePicture = async (accountId: number, cookies: ICookie[], s
 		}
 		return undefined;
 	} catch (error) {
-		console.error('🚀 ~ getProfilePicture ~ error:', error);
 		return undefined;
 	}
 };
 
-const findByHashAndAccountId = async (hash: string, accountId: number): Promise<IImageDoc | null> => {
+export const findByHashAndAccountId = async (hash: string, accountId: number): Promise<IImageDoc | null> => {
 	return Image.findOne({
 		hash,
 		accountId
@@ -66,3 +65,6 @@ const createHashed = async (payload: IImagePayload): Promise<IImageDoc> => {
 		...payload
 	});
 };
+export const findByAccountId = async (accountId: number): Promise<IImageDoc | null> => {
+	return Image.findOne({accountId}).sort({createdAt: -1}) || null;
+}
