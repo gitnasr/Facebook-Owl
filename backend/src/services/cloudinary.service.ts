@@ -46,7 +46,7 @@ export const isSimilar = async (hash1: string, hash2: string): Promise<{similer:
 	const similarity = (totalBits - hammingDist) / totalBits;
 
 	return {
-		similer: similarity > 0.7,
+		similer: similarity >= 0.5,
 		per: similarity
 	}
 };
