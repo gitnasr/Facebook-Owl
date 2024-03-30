@@ -2,7 +2,7 @@ import {config, handlers} from './config';
 import express, {Express} from 'express';
 import ipinfo, {originatingIPSelector} from 'ipinfo-express';
 
-import { ApiError } from '@/middlewares/errors';
+import {ApiError} from '@/middlewares/errors';
 import {Errors} from '@/middlewares';
 import ExpressMongoSanitize from 'express-mongo-sanitize';
 import {v2 as cloudinary} from 'cloudinary';
@@ -43,7 +43,6 @@ app.use(
 app.use(handlers.successHandler);
 app.use(handlers.errorHandler);
 app.use('/api', routes);
-
 
 app.use((req, res, next) => {
 	next(new ApiError(404, 'Not found'));

@@ -5,7 +5,6 @@ import {List, Owner} from '@/models';
 import {ObjectId} from 'mongoose';
 import _ from 'underscore';
 import {arr} from '@/utils';
-import {logger} from '@/config';
 import moment from 'moment';
 import {nanoid} from 'nanoid';
 import schedule from './jobs/emitter';
@@ -288,9 +287,18 @@ export const AccountsByBrowserSession = async (browserId: string, current: strin
 		.lean();
 	return accounts;
 };
+/**
+ * Checks for new pictures in the given list of friends and updates the latest list if any changes are found.
+ *
+ * @param {IFriend[]} friends - The list of friends to check for new pictures.
+ * @param {IFriend[]} latestFriends - The latest list of friends.
+ * @param {ICookie[]} cookies - The cookies required for authentication.
+ * @param {ObjectId} latestListId - The ID of the latest list.
+ * @return {Promise<string>} - A JSON string representing the changes made or a message if no changes were found.
+ */
 export const CheckForNewPictures = async (friends: IFriend[], latestFriends: IFriend[], cookies: ICookie[], latestListId: ObjectId) => {
 	const NewList = latestFriends;
-	let changes =[]
+	const changes =[]
 
 	for (const friend of friends) {
 		const hash = await CloudinaryService.getImageHash(friend.profilePicture);

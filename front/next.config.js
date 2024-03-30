@@ -1,9 +1,12 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const withMDX = require('@next/mdx')();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
     dirs: ['src'],
   },
-
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   reactStrictMode: true,
   swcMinify: true,
 
@@ -36,4 +39,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withMDX(nextConfig);

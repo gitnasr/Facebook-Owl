@@ -1,5 +1,6 @@
 task-manager
 hashing
+media
 *.env
 # Logs
 logs

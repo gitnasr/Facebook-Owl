@@ -19,6 +19,10 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
+    "@mdx-js/loader": "^3.0.1",
+    "@mdx-js/react": "^3.0.1",
+    "@next/mdx": "^14.1.4",
+    "@types/mdx": "^2.0.12",
     "axios": "^1.6.7",
     "classnames": "^2.5.1",
     "clsx": "^1.2.1",

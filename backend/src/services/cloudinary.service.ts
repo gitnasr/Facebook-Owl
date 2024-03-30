@@ -1,3 +1,4 @@
+import {ISimilar} from '@/types/image.types';
 import {ImageResponse} from '@/types';
 import {v2 as cloudinary} from 'cloudinary';
 import {imageHash} from 'image-hash';
@@ -31,7 +32,7 @@ export const getImageHash = async (ImageURL: string): Promise<string | undefined
 		return;
 	}
 };
-export const isSimilar = async (hash1: string, hash2: string): Promise<{similer: boolean, per: number}> => {
+export const isSimilar: ISimilar = async (hash1: string, hash2: string) => {
 	if (hash1.length !== hash2.length) {
 		throw new Error('pHashes must have the same length');
 	}
@@ -48,5 +49,5 @@ export const isSimilar = async (hash1: string, hash2: string): Promise<{similer:
 	return {
 		similer: similarity >= 0.5,
 		per: similarity
-	}
+	};
 };
