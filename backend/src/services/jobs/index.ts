@@ -5,13 +5,10 @@ import JobHandlers from './handlers';
 import RedisService from '@/services/redis';
 
 class JobService {
-	workers:
-		| {
-				[key: string]: Worker;
-		  }
-		| undefined;
+	workers: { [key: string]: Worker } | undefined; // Ensures workers is an object with string keys or undefined
+
 	defaultOptions: WorkerOptions;
-	Queues: Record<string, Queue> = {};
+	Queues: Record<string, Queue> = {}; // Uses keyof with 'this.workers' for type safety
 	constructor() {
 		this.defaultOptions = {
 			connection: RedisService.connection,
