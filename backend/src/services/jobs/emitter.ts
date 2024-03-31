@@ -3,19 +3,19 @@ import {PatrolJob} from '@/types';
 
 const schedule = {
 	syncFriends: async (data: any, jName: string) => {
-		const job = await JobService.Queues.Sync.add(jName, data);
+		const job = await JobService.Queues.Syncer.add(jName, data);
 		return job;
 	},
 
 	getActiveJob: async (jobName: string): Promise<Boolean> => {
 		let isActive = false;
-		const activeJobIds = await JobService.Queues.Sync.getActive();
+		const activeJobIds = await JobService.Queues.Syncer.getActive();
 		if (activeJobIds.length === 0) {
 			return isActive;
 		}
 		for (const ajob of activeJobIds) {
 			const jobId = ajob.id;
-			const job = await JobService.Queues.Sync.getJob(jobId as string);
+			const job = await JobService.Queues.Syncer.getJob(jobId as string);
 			if (job?.name === jobName) {
 				isActive = true;
 				break;
