@@ -1,46 +1,58 @@
-import {Queue, Worker} from 'bullmq';
+import {Queue, Worker, WorkerOptions} from 'bullmq';
 
 import {CronTime} from 'cron-time-generator';
 import JobHandlers from './handlers';
-import {Redis} from 'ioredis';
-import {config} from '@/config';
-import moment from 'moment';
+import RedisService from '@/services/redis';
 
-const RedisService = new Redis(config.redis.url, {maxRetriesPerRequest: null});
-const SyncQ = new Queue('Syncer', {connection: RedisService});
-const worker = new Worker('Syncer', JobHandlers.Sync, {
-	connection: RedisService,
-	concurrency: 5,
-	removeOnComplete: {
-		age: moment.duration(1, 'hour').asMilliseconds(),
-		count: 4
+class JobService {
+	workers:
+		| {
+				[key: string]: Worker;
+		  }
+		| undefined;
+	defaultOptions: WorkerOptions;
+	Queues: Record<string, Queue> = {};
+	constructor() {
+		this.defaultOptions = {
+			connection: RedisService.connection,
+			removeOnComplete: {
+				count: 2
+			},
+			concurrency: 1
+		};
+		this.defineWorkers();
+		this.defineQueue();
 	}
-});
-
-const FixerQ = new Queue('Fixer', {connection: RedisService});
-new Worker('Fixer', JobHandlers.Fixer, {
-	connection: RedisService,
-	concurrency: 1,
-	removeOnComplete: {
-		age: moment.duration(1, 'hour').asMilliseconds(),
-		count: 4
+	private defineWorkers() {
+		this.workers = {
+			Syncer: new Worker('Syncer', JobHandlers.Sync, {
+				...this.defaultOptions,
+				concurrency: 5,
+				removeOnComplete: {
+					count: 5
+				}
+			}),
+			Fixer: new Worker('Fixer', JobHandlers.Fixer, this.defaultOptions),
+			Patrol: new Worker('Patrol', JobHandlers.Partol, this.defaultOptions)
+		};
 	}
-});
-FixerQ.add(
-	'Fixer',
-	{},
-	{
-		repeat: {
-			pattern: CronTime.everyDayAt(0, 0)
-		},
-		jobId: 'Fixer'
+	defineQueue() {
+		for (const key in this.workers) {
+			this.Queues[key] = new Queue(key, {connection: RedisService.connection});
+		}
 	}
-);
+	startFixer() {
+		this.Queues.Fixer.add(
+			'Fixer',
+			{},
+			{
+				repeat: {
+					pattern: CronTime.everyDayAt(0, 0),
+					jobId: 'Fixer'
+				}
+			}
+		);
+	}
+}
 
-const PatrolQ = new Queue('Patrol', {connection: RedisService});
-
-new Worker('Patrol', JobHandlers.Partol, {
-	connection: RedisService,
-	concurrency: 1
-});
-export {PatrolQ, RedisService, SyncQ, worker};
+export default new JobService();

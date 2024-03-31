@@ -11,6 +11,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
 import routes from '@/routes';
+import schedule from './services/jobs/emitter';
 
 cloudinary.config({
 	cloud_name: config.cloudinary.cloudName,
@@ -61,6 +62,8 @@ mongoose
 	.connect(config.mongoose.url)
 	.then(() => {
 		console.log('Connected to MongoDB');
+		schedule.fix();
+
 	})
 	.catch(err => {
 		console.error('Error connecting to MongoDB: ', err);

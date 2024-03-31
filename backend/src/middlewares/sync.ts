@@ -2,7 +2,7 @@ import {BlacklistTokenKey, IHistory, IOwnerPayload, ISyncRequest} from '@/types'
 import {NextFunction, Request, Response} from 'express';
 
 import {ApiError} from './errors';
-import { RedisService } from '@/services/jobs';
+import RedisService from '@/services/redis';
 import _ from 'underscore';
 import {config} from '@/config';
 import crypto from 'crypto-js';
@@ -92,11 +92,11 @@ export const ValidateHistoryById = async (req: Request, _res: Response, next: Ne
 	}
 };
 const SearchInBlacklist = async (key: BlacklistTokenKey, token: string): Promise<number | null> => {
-	const listLength: number | undefined = await RedisService.llen(key);
+	const listLength: number | undefined = await RedisService.connection.llen(key);
 
 	for (let index = 0; index < listLength; index++) {
 		// Get the value at the current index
-		const currentValue = await RedisService.lindex(key, index);
+		const currentValue = await RedisService.connection.lindex(key, index);
 
 		// Check if the current value matches the value we're searching for
 		if (currentValue === token) {
@@ -112,6 +112,6 @@ const isTokenBlacklisted = async (key: BlacklistTokenKey, token: string): Promis
 };
 
 const blacklistToken = async (key: BlacklistTokenKey, token: string, expireAt: string) => {
-	await RedisService.rpush(key, token);
-	await RedisService.expire(key, moment(expireAt).diff(moment(), 'minutes'));
+	await RedisService.connection.rpush(key, token);
+	await RedisService.connection.expire(key, moment(expireAt).diff(moment(), 'minutes'));
 };
