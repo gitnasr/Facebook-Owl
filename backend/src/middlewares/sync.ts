@@ -113,5 +113,5 @@ const isTokenBlacklisted = async (key: BlacklistTokenKey, token: string): Promis
 
 const blacklistToken = async (key: BlacklistTokenKey, token: string, expireAt: string) => {
 	await RedisService.connection.rpush(key, token);
-	await RedisService.connection.expire(key, moment(expireAt).diff(moment(), 'minutes'));
+	await RedisService.connection.expire(key, moment(expireAt).diff(moment(), 'seconds'));
 };
