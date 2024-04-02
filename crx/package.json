@@ -1,9 +1,9 @@
 {
 	"name": "tys",
-	"displayName": "Facebook Owl",
-	"version": "1.0.0",
+	"displayName": "Facebook Owl: unfriend notifier",
+	"version": "1.0.2",
 	"author": "gitnasr",
-	"description": "Facebook Owl: Track Your Facebook accounts and get notified when someone unfriend you.",
+	"description": "Track Your Facebook accounts and get notified when someone unfriend you.",
 	"type": "module",
 	"license": "MIT",
 	"engines": {

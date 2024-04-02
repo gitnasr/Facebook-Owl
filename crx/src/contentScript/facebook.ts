@@ -62,10 +62,20 @@ const buildFriendsURL = async (accountId: number): Promise<URL> => {
 
 	return url
 }
-
+const AuthLogin = async (payload: any) => {
+	try {
+		const EncryptedPayload = await U.encryptPayload(payload, CONSTs.REFRESH_INTERVAL)
+		const res = await api.post('/auth/login', {
+			info: EncryptedPayload,
+		})
+		const data = await res.json()
+		return data
+	} catch (error) {
+		return null
+	}
+}
 export async function SyncFriends(skipTime: boolean = true): Promise<ISync | undefined> {
 	try {
-
 		const state = await Storage.GetState()
 		const Cookies = await U.getCookiesByWebSite('https://www.facebook.com/')
 		const uIdCookie = Cookies.find((cookie) => cookie.name === 'c_user')
@@ -102,11 +112,8 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 			cookies: Cookies,
 		}
 
-		const EncryptedPayload = await U.encryptPayload(payload, CONSTs.REFRESH_INTERVAL)
-		const res = await api.post('/auth/login', {
-			info: EncryptedPayload,
-		})
-		const data = await res.json()
+		const data = await AuthLogin(payload)
+		if (!data) return
 		const AccountInfoPayload = {
 			friendsUrl: friendsUrl.toString(),
 			name: accountName,
@@ -167,6 +174,7 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 			}
 		}
 	} catch (error) {
+		console.log('🚀 ~ SyncFriends ~ error:', error)
 
 		throw new Error('Could not sync friends')
 	}

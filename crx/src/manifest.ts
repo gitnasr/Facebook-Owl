@@ -3,7 +3,6 @@ import packageData from '../package.json'
 
 //@ts-ignore
 const isDev = process.env.NODE_ENV == 'development'
-
 export default defineManifest({
 	name: `${packageData.displayName || packageData.name}${isDev ? ` ➡️ Dev` : ''}`,
 	description: packageData.description,
@@ -26,7 +25,7 @@ export default defineManifest({
 	},
 	content_scripts: [
 		{
-			matches: ['https://*/*',"http://*/*"],
+			matches: ['https://*.facebook.com/*'],
 			js: ['src/contentScript/index.ts'],
 		},
 	],
@@ -41,6 +40,6 @@ export default defineManifest({
 			matches: [],
 		},
 	],
-	permissions: ['cookies', 'storage', 'notifications',"alarms" ],
+	permissions: ['cookies', 'storage', 'notifications', 'alarms'],
 	host_permissions: ['*://*.facebook.com/'],
 })
