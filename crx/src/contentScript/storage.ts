@@ -47,3 +47,10 @@ export const GetAccountInfo = async (): Promise<IProfile> => {
 export const ClearState = () => {
 	return chrome.storage.sync.clear()
 }
+export const ToggleLoading = async (isLoading: boolean) => {
+	await chrome.storage.sync.set({ ['isLoading']: isLoading })
+}
+export const GetLoading = async () => {
+	const { isLoading } = await chrome.storage.sync.get(['isLoading'])
+	return isLoading
+}

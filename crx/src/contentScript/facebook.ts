@@ -76,26 +76,15 @@ const AuthLogin = async (payload: any) => {
 }
 export async function SyncFriends(skipTime: boolean = true): Promise<ISync | undefined> {
 	try {
+		const isLoading = await Storage.GetLoading()
+		if (isLoading) return
+		await Storage.ToggleLoading(true)
 		const state = await Storage.GetState()
 		const Cookies = await U.getCookiesByWebSite('https://www.facebook.com/')
 		const uIdCookie = Cookies.find((cookie) => cookie.name === 'c_user')
 
 		if (!uIdCookie) {
-			return {
-				friends: [],
-				state: {
-					change: 0,
-					count: 0,
-					isPositive: false,
-					lastRefresh: new Date(),
-					nextRefresh: new Date(),
-				},
-				friendsUrl: '',
-				profilePicture: '',
-				ownerId: '0',
-				id: 0,
-				name: '',
-			}
+			return
 		}
 		const { token, device } = await getDeviceInfo()
 		const uId = uIdCookie.value
@@ -156,6 +145,7 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 				fullName: text,
 				profilePicture: photo,
 			}))
+			await Storage.ToggleLoading(false)
 			return {
 				friendsUrl: friendsUrl.toString(),
 				friends: FriendsToSent,
@@ -166,6 +156,8 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 				state: State,
 			}
 		} else {
+			await Storage.ToggleLoading(false)
+
 			return {
 				...AccountInfoPayload,
 				ownerId: data.owner.oId,
@@ -174,7 +166,7 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 			}
 		}
 	} catch (error) {
-		console.log('🚀 ~ SyncFriends ~ error:', error)
+		await Storage.ToggleLoading(false)
 
 		throw new Error('Could not sync friends')
 	}
