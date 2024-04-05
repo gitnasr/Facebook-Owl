@@ -4,7 +4,7 @@ import { CONSTs, SyncSource } from '../types/enum'
 import { SendFriends } from '../contentScript/sync'
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	;(async () => {
+	(async () => {
 		if (request.type === 'sync') {
 			const sync = await Facebook.SyncFriends(request.skip)
 			sendResponse(sync)
@@ -17,7 +17,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.notifications.onClicked.addListener(() => {
 	Authentication.DashboardOpen()
 })
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(async ({reason}) => {
+	if (reason !== "install") return
 	const sync = await Facebook.SyncFriends()
 	if (!sync) return
 	if (sync.friends.length > 0) {

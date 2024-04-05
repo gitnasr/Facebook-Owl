@@ -125,6 +125,7 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 			const UpdatedInfo = {
 				...AccountInfoPayload,
 				profilePicture: friends[0].photo,
+				name: friends[0].text, // Update the name to the first friend which is the owner
 			}
 			friends = friends.slice(1)
 			await Storage.UpdateAccountInfo(UpdatedInfo)
