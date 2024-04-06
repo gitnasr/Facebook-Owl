@@ -44,7 +44,19 @@ app.use(
 app.use(handlers.successHandler);
 app.use(handlers.errorHandler);
 app.use('/api', routes);
-
+app.get('/health', async (_req, res, _next) => {
+	// optional: add further things to check (e.g. connecting to dababase)
+	const healthcheck = {
+		uptime: process.uptime(),
+		message: 'OK',
+		timestamp: Date.now()
+	};
+	try {
+		res.send(healthcheck);
+	} catch (e) {
+		res.status(503).send();
+	}
+});
 app.use((req, res, next) => {
 	next(new ApiError(404, 'Not found'));
 });
