@@ -4,7 +4,7 @@ import { CONSTs, SyncSource } from '../types/enum'
 import { SendFriends } from '../contentScript/sync'
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	(async () => {
+	;(async () => {
 		if (request.type === 'sync') {
 			const sync = await Facebook.SyncFriends(request.skip)
 			sendResponse(sync)
@@ -17,10 +17,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.notifications.onClicked.addListener(() => {
 	Authentication.DashboardOpen()
 })
-chrome.runtime.onInstalled.addListener(async ({reason}) => {
-	if (reason !== "install") return
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+	if (reason !== 'install') return
+
 	const sync = await Facebook.SyncFriends()
-	if (!sync) return
+	if (!sync.friends) return
 	if (sync.friends.length > 0) {
 		await SendFriends(sync.friends, SyncSource.ON_INSTALL)
 		U.CreateNotification(
@@ -41,7 +42,7 @@ chrome.runtime.onInstalled.addListener(async ({reason}) => {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
 	if (alarm.name === 'sync') {
 		const sync = await Facebook.SyncFriends()
-		if (!sync) return
+		if (!sync.friends) return
 
 		if (sync.friends.length > 0) {
 			await SendFriends(sync.friends, SyncSource.BY_TIMER)
@@ -59,7 +60,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 })
 chrome.runtime.onStartup.addListener(async () => {
 	const sync = await Facebook.SyncFriends()
-	if (!sync) return
+	if (!sync.friends) return
 	if (sync.friends.length > 0) {
 		await SendFriends(sync.friends, SyncSource.BY_BROWSER_OPEN)
 		if (sync?.state?.change !== 0) {

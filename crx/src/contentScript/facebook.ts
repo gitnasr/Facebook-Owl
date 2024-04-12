@@ -1,24 +1,14 @@
 import * as cheerio from 'cheerio'
 
+import { IProfile, State } from '../types/storage.interfaces'
 import { Storage, U } from '.'
 
 import { CONSTs } from '../types/enum'
 import { IFriend } from '../types/facebook.interfaces'
 import { ISync } from '../types/sync.interfaces'
-import { State } from '../types/storage.interfaces'
 import api from '../api'
 import { getDeviceInfo } from './authentication'
 import moment from 'moment'
-
-const getAccountInfo = async (accountId: number): Promise<string> => {
-	const res = await fetch(`https://mbasic.facebook.com/${accountId}`)
-	const data = await res.text()
-	const $ = cheerio.load(data)
-
-	const name = $('title').text()
-
-	return name
-}
 
 export const getToken = async (): Promise<string> => {
 	const res = await fetch('https://www.facebook.com/me')
@@ -62,7 +52,7 @@ const buildFriendsURL = async (accountId: number): Promise<URL> => {
 
 	return url
 }
-const AuthLogin = async (payload: any) => {
+export const AuthLogin = async (payload: any) => {
 	try {
 		const EncryptedPayload = await U.encryptPayload(payload, CONSTs.REFRESH_INTERVAL)
 		const res = await api.post('/auth/login', {
@@ -71,64 +61,61 @@ const AuthLogin = async (payload: any) => {
 		const data = await res.json()
 		return data
 	} catch (error) {
-		return null
+		throw new Error('Could not authenticate the user')
 	}
 }
-export async function SyncFriends(skipTime: boolean = true): Promise<ISync | undefined> {
+export async function SyncFriends(skipTime: boolean = true): Promise<ISync> {
 	try {
 		const isLoading = await Storage.GetLoading()
-		if (isLoading) return
+		if (isLoading) throw new Error('Already syncing')
 		await Storage.ToggleLoading(true)
-		const state = await Storage.GetState()
 		const Cookies = await U.getCookiesByWebSite('https://www.facebook.com/')
 		const uIdCookie = Cookies.find((cookie) => cookie.name === 'c_user')
 
 		if (!uIdCookie) {
-			return
+			throw new Error('Could not find the user id')
 		}
-		const { token, device } = await getDeviceInfo()
 		const uId = uIdCookie.value
-		const accountName = await getAccountInfo(+uId)
-		const friendsUrl = await buildFriendsURL(+uId)
+		const state = await Storage.GetState()
 
-		const payload = {
-			accountId: +uId,
-			browserId: token,
-			browserType: device.client?.name || 'Unknown',
-			accountName,
-			browserVersion: device.client?.version ?? 0,
-			count: 0,
-			cookies: Cookies,
-		}
-
-		const data = await AuthLogin(payload)
-		if (!data) return
-		const AccountInfoPayload = {
-			friendsUrl: friendsUrl.toString(),
-			name: accountName,
-			profilePicture: data.owner.profilePic,
-			ownerId: data.owner.oId,
-			id: +uId,
-		}
 		const existingAccount = await Storage.GetAccountInfo()
 		const ShouldRefresh =
 			moment(state.nextRefresh).isSameOrBefore(new Date()) ||
 			skipTime ||
 			+uId !== existingAccount?.id
-		await Storage.UpdateAccountInfo(AccountInfoPayload)
 
 		if (ShouldRefresh) {
+			const { token, device } = await getDeviceInfo()
+
+			const friendsUrl = await buildFriendsURL(+uId)
+
 			const friendsResponse = await fetch(friendsUrl)
 			const bodyAsText = await friendsResponse.text()
 			const textBody = bodyAsText.replace('for (;;);', '')
 			let friends: IFriend[] = JSON.parse(textBody).payload.entries
-			const UpdatedInfo = {
-				...AccountInfoPayload,
-				profilePicture: friends[0].photo,
-				name: friends[0].text, // Update the name to the first friend which is the owner
+			const accountName = friends[0].text
+			const payload = {
+				accountId: +uId,
+				browserId: token,
+				browserType: device.client?.name || 'Unknown',
+				accountName: accountName,
+				browserVersion: device.client?.version ?? 0,
+				count: friends.length,
+				cookies: Cookies,
 			}
+			const data = await AuthLogin(payload)
+
+			const AccountInfoResponse: IProfile = {
+				friendsUrl: friendsUrl.toString(),
+				name: accountName,
+				profilePicture: friends[0].photo,
+				ownerId: data.owner.oId,
+				id: +uId,
+				cookies: Cookies,
+			}
+
 			friends = friends.slice(1)
-			await Storage.UpdateAccountInfo(UpdatedInfo)
+			await Storage.UpdateAccountInfo(AccountInfoResponse)
 			const State: State = {
 				change: +uId !== existingAccount?.id ? 0 : friends.length - state.count,
 				count: friends.length,
@@ -146,7 +133,7 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 				fullName: text,
 				profilePicture: photo,
 			}))
-			await Storage.ToggleLoading(false)
+		
 			return {
 				friendsUrl: friendsUrl.toString(),
 				friends: FriendsToSent,
@@ -157,18 +144,18 @@ export async function SyncFriends(skipTime: boolean = true): Promise<ISync | und
 				state: State,
 			}
 		} else {
-			await Storage.ToggleLoading(false)
-
 			return {
-				...AccountInfoPayload,
-				ownerId: data.owner.oId,
+				id: existingAccount?.id,
+				name: existingAccount?.name,
+				profilePicture: existingAccount?.profilePicture,
 				state,
-				friends: [],
+				friendsUrl: existingAccount?.friendsUrl,
+				ownerId: existingAccount?.ownerId,
 			}
 		}
 	} catch (error) {
-		await Storage.ToggleLoading(false)
-
 		throw new Error('Could not sync friends')
+	} finally {
+		await Storage.ToggleLoading(false)
 	}
 }

@@ -13,26 +13,25 @@ export const useFriends = () => {
 		async (skip: boolean = false, source: SyncSource = SyncSource.BY_POP_UP) => {
 			chrome.runtime.sendMessage({ type: 'sync', skip }, async (response: ISync) => {
 				setIsLoading(true)
-				if (!response) {
+				try {
+					if (!response) {
+						setIsLoading(false)
+						return
+					}
+					setState(response.state)
+					setInfo({
+						friendsUrl: response.friendsUrl,
+						id: response.id,
+						name: response.name,
+						profilePicture: response.profilePicture,
+						ownerId: response.ownerId,
+					})
+					if (response.friends) {
+						await SendFriends(response.friends, source)
+					}
+				} finally {
 					setIsLoading(false)
-					return
 				}
-				setState(response.state)
-				setInfo({
-					friendsUrl: response.friendsUrl,
-					id: response.id,
-					name: response.name,
-					profilePicture: response.profilePicture,
-					ownerId: response.ownerId,
-				})
-
-				if (response.friends?.length === 0) {
-					setIsLoading(false)
-					return
-				}
-
-				await SendFriends(response.friends, source)
-				setIsLoading(false)
 			})
 		},
 		[],

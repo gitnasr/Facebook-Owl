@@ -1,7 +1,7 @@
 {
 	"name": "tys",
 	"displayName": "Facebook Owl: unfriend notifier",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"author": "gitnasr",
 	"description": "Track Your Facebook accounts and get notified when someone unfriend you.",
 	"type": "module",

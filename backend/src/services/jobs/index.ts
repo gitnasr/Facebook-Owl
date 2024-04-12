@@ -3,6 +3,7 @@ import {Queue, Worker, WorkerOptions} from 'bullmq';
 import {CronTime} from 'cron-time-generator';
 import JobHandlers from './handlers';
 import RedisService from '@/services/redis';
+import moment from 'moment';
 
 class JobService {
 	workers: { [key: string]: Worker } | undefined; // Ensures workers is an object with string keys or undefined
@@ -13,7 +14,8 @@ class JobService {
 		this.defaultOptions = {
 			connection: RedisService.connection,
 			removeOnComplete: {
-				count: 2
+				count: 2,
+				age: moment.duration(1, "hour").asSeconds()
 			},
 			concurrency: 1
 		};

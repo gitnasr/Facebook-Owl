@@ -7,16 +7,16 @@ import {catchAsync} from '@/utils';
 
 export const loginWithExtension = catchAsync(async (req: IAuthRequest, res: Response) => {
 	const {browserId, accountId, browserType, count, accountName, browserVersion, cookies} = req.body;
+
 	let user = await AuthService.findByBrowserId(browserId);
 	const country = req?.ipinfo?.country || 'Unknown';
+
 	if (!user) {
 		user = await AuthService.createUser(browserId, browserVersion, browserType, country);
 	}
 
-	let owner = await OwnerService.findAccountByOptions({
-		accountId,
-		browserId
-	});
+	let owner = await OwnerService.findAccountByOptions({accountId, browserId});
+
 	if (!owner) {
 		owner = await OwnerService.createOwner({
 			browserId,
@@ -26,16 +26,13 @@ export const loginWithExtension = catchAsync(async (req: IAuthRequest, res: Resp
 			cookies,
 			country
 		});
-	}
-	if (!owner?.isNew) {
-		let pp = await FacebookService.getProfilePicture(accountId, cookies);
-		const isSame = pp?.hash === owner?.pp_hash;
+	} else {
+		const pp = await FacebookService.getProfilePicture(accountId, cookies);
+		const isSame = pp?.hash === owner.pp_hash;
+
 		if (!isSame) {
 			owner = await OwnerService.updateOwner(
-				{
-					accountId,
-					browserId
-				},
+				{accountId, browserId},
 				{
 					accountName,
 					profilePic: pp?.url,
@@ -44,21 +41,13 @@ export const loginWithExtension = catchAsync(async (req: IAuthRequest, res: Resp
 				}
 			);
 		}
-		// Update account name if it's different
-		const isSameName = accountName === owner?.accountName;
-		if (!isSameName) {
-			owner = await OwnerService.updateOwner(
-				{
-					accountId,
-					browserId
-				},
-				{
-					accountName
-				}
-			);
+
+		if (accountName !== owner?.accountName) {
+			owner = await OwnerService.updateOwner({accountId, browserId}, {accountName});
 		}
 	}
-	res.status(200).json({
+
+	return res.status(200).json({
 		user,
 		owner: _.omit(owner, 'cookies')
 	});

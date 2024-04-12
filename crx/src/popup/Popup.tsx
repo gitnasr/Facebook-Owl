@@ -76,6 +76,20 @@ export const Popup = () => {
 					</div>
 				</div>
 			</div>
+			<div className="my-2">
+				<small className="flex justify-center m-auto text-center">
+					By using this Extension, you implicitly agree to all{' '}
+					<a
+						href="https://owl.gitnasr.com/privacy"
+						target="_blank"
+						referrerPolicy="no-referrer"
+						className="ml-1 text-gray-300 underline "
+					>
+						privacy policy
+					</a>
+					.
+				</small>
+			</div>
 		</main>
 	)
 }

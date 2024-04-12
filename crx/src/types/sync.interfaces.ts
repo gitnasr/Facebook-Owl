@@ -7,7 +7,7 @@ export interface IAccountInfo {
 	friendsURL: string
 }
 export interface ISync extends IProfile {
-	friends: IFriendSync[]
+	friends?: IFriendSync[]
 	state: State
 }
 

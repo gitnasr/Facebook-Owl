@@ -6,6 +6,14 @@ import axios from 'axios';
 import {config} from '@/config';
 import {nanoid} from 'nanoid';
 
+/**
+ * Retrieves the profile picture for a given account ID from Facebook.
+ * 
+ * @param accountId - The ID of the account.
+ * @param cookies - An array of cookies to be included in the request headers.
+ * @param shouldCon - Optional. Specifies whether to continue processing the image after retrieval. Defaults to true.
+ * @returns A Promise that resolves to an object containing the profile picture URL, hash, and ID, or undefined if the picture cannot be retrieved.
+ */
 export const getProfilePicture = async (accountId: number, cookies: ICookie[], shouldCon: boolean = true): Promise<IProfilePicture | undefined> => {
 	try {
 		let url = `https://graph.facebook.com/${accountId}/picture?width=1080&access_token=${config.facebook.accessToken}`;
