@@ -45,4 +45,9 @@ Once installed, Facebook Owl seamlessly integrates into the user's browsing expe
 
 ## Support
 
-For any questions, issues, or support, please get in touch with gitnasr@proton.me.
+For any questions, issues, or support, please contact gitnasr@proton.me.
+
+
+## Repo
+
+If you were coming through the main domain, access to the <a href="https://github.com/gitnasr/Facebook-Owl">repo</a> from here
